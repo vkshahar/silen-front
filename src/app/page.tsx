@@ -19,7 +19,7 @@ export default function Dashboard() {
       {/* Main Content Area */}
       <div className="flex-1 transition-all duration-300 ease-in-out">
         {/* Header */}
-        <header className="bg-white border-b border-slate-200 px-6 py-6">
+        <header className="bg-white border-b border-slate-200 px-6 py-4">
           <div className="max-w-7xl mx-auto">
             <div>
               <h1 className="text-2xl font-bold text-slate-900">Security Dashboard</h1>

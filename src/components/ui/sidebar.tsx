@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { 
   Home, 
   User, 
@@ -12,7 +13,6 @@ import {
   BarChart3,
   FileText,
   Bell,
-  Search,
   HelpCircle,
   Activity,
   Target,
@@ -42,9 +42,18 @@ const navigationItems: NavigationItem[] = [
 ];
 
 export function Sidebar({ className = "" }: SidebarProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [activeItem, setActiveItem] = useState("dashboard");
+  
+  // Get active item based on current pathname
+  const getActiveItem = () => {
+    const currentItem = navigationItems.find(item => item.href === pathname);
+    return currentItem ? currentItem.id : 'dashboard';
+  };
+  
+  const activeItem = getActiveItem();
 
   // Auto-open sidebar on desktop
   useEffect(() => {
@@ -64,8 +73,8 @@ export function Sidebar({ className = "" }: SidebarProps) {
   const toggleSidebar = () => setIsOpen(!isOpen);
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
 
-  const handleItemClick = (itemId: string) => {
-    setActiveItem(itemId);
+  const handleItemClick = (itemId: string, href: string) => {
+    router.push(href);
     if (window.innerWidth < 768) {
       setIsOpen(false);
     }
@@ -137,19 +146,6 @@ export function Sidebar({ className = "" }: SidebarProps) {
           </button>
         </div>
 
-        {/* Search Bar */}
-        {!isCollapsed && (
-          <div className="px-4 py-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-md text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all duration-200"
-              />
-            </div>
-          </div>
-        )}
 
         {/* Navigation */}
         <nav className="flex-1 px-3 py-2 overflow-y-auto">
@@ -161,7 +157,7 @@ export function Sidebar({ className = "" }: SidebarProps) {
               return (
                 <li key={item.id}>
                   <button
-                    onClick={() => handleItemClick(item.id)}
+                    onClick={() => handleItemClick(item.id, item.href)}
                     className={`
                       w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-md text-left transition-all duration-200 group
                       ${isActive
@@ -259,7 +255,10 @@ export function Sidebar({ className = "" }: SidebarProps) {
           {/* Logout Button */}
           <div className="p-3">
             <button
-              onClick={() => handleItemClick("logout")}
+              onClick={() => {
+                // Handle logout logic here
+                console.log("Logout clicked");
+              }}
               className={`
                 w-full flex items-center rounded-md text-left transition-all duration-200 group
                 text-red-600 hover:bg-red-50 hover:text-red-700

@@ -25,7 +25,7 @@ export function MetricCard({
   className
 }: MetricCardProps) {
   return (
-    <Card className={cn("", className)}>
+    <Card className={cn("hover:bg-purple-50 hover:border-purple-200 transition-colors duration-200", className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
