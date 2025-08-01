@@ -4,13 +4,11 @@ import { Sidebar } from "@/components/ui/sidebar";
 import { MetricCard } from "@/components/ui/metric-card";
 import { IngressEgressChart } from "@/components/ui/ingress-egress-chart";
 import { 
-  Shield, 
-  AlertTriangle, 
-  Users, 
-  Activity,
-  TrendingUp,
-  TrendingDown,
-  Minus
+  Calendar,
+  ArrowDown,
+  ArrowUp,
+  Target,
+  Database
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -22,17 +20,10 @@ export default function Dashboard() {
       <div className="flex-1 transition-all duration-300 ease-in-out">
         {/* Header */}
         <header className="bg-white border-b border-slate-200 px-6 py-6">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="max-w-7xl mx-auto">
             <div>
               <h1 className="text-2xl font-bold text-slate-900">Security Dashboard</h1>
               <p className="text-slate-600 mt-1">Monitor your security metrics and network traffic</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <p className="text-sm font-medium text-slate-900">Last updated</p>
-                <p className="text-xs text-slate-500">2 minutes ago</p>
-              </div>
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
             </div>
           </div>
         </header>
@@ -40,39 +31,49 @@ export default function Dashboard() {
         {/* Main Dashboard Content */}
         <main className="px-6 py-8">
           <div className="max-w-7xl mx-auto space-y-8">
+            {/* Metrics Header with Tag */}
+            <div className="flex items-center gap-3">
+              <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium border border-blue-200">
+                Data Source
+              </div>
+            </div>
+
             {/* Metrics Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 -mt-4">
               <MetricCard
-                title="Total Threats Blocked"
-                value="1,245"
-                change="+12.5% from last week"
+                title="Cost Savings (30 Days)"
+                value="$6,286"
+                change="+15%"
                 changeType="positive"
-                icon={Shield}
-                description="Successfully blocked threats"
+                icon={Calendar}
               />
               <MetricCard
-                title="Critical Alerts"
-                value="23"
-                change="+5 from yesterday"
+                title="Cost Savings (Annual)"
+                value="$75,426"
+                change="+18%"
+                changeType="positive"
+                icon={Calendar}
+              />
+              <MetricCard
+                title="Input Data"
+                value="1848 GB"
+                change="-5%"
                 changeType="negative"
-                icon={AlertTriangle}
-                description="Requiring immediate attention"
+                icon={ArrowDown}
               />
               <MetricCard
-                title="Active Users"
-                value="156"
-                change="No change"
-                changeType="neutral"
-                icon={Users}
-                description="Currently online"
-              />
-              <MetricCard
-                title="System Uptime"
-                value="99.9%"
-                change="+0.1% this month"
+                title="Output Data"
+                value="643 GB"
+                change="+12%"
                 changeType="positive"
-                icon={Activity}
-                description="Last 30 days"
+                icon={ArrowUp}
+              />
+              <MetricCard
+                title="Optimization Rate"
+                value="65%"
+                change="+8%"
+                changeType="positive"
+                icon={Target}
               />
             </div>
 
@@ -81,58 +82,67 @@ export default function Dashboard() {
               <IngressEgressChart />
             </div>
 
-            {/* Additional Metrics Row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <MetricCard
-                title="Data Processed"
-                value="2.4 TB"
-                change="+15.3% from last month"
-                changeType="positive"
-                icon={TrendingUp}
-                description="Total data processed"
-              />
-              <MetricCard
-                title="Failed Login Attempts"
-                value="89"
-                change="-23% from last week"
-                changeType="positive"
-                icon={TrendingDown}
-                description="Blocked unauthorized access"
-              />
-              <MetricCard
-                title="Response Time"
-                value="125ms"
-                change="Stable"
-                changeType="neutral"
-                icon={Minus}
-                description="Average API response time"
-              />
-            </div>
-
-            {/* Quick Actions */}
+            {/* Log Sources Table */}
             <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h2 className="text-lg font-semibold text-slate-900 mb-6">Quick Actions</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <button className="p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors text-left">
-                  <Shield className="h-5 w-5 text-brand-primary mb-2" />
-                  <p className="text-sm font-medium text-slate-900">Run Security Scan</p>
-                  <p className="text-xs text-slate-500">Full system scan</p>
-                </button>
-                <button className="p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors text-left">
-                  <AlertTriangle className="h-5 w-5 text-amber-500 mb-2" />
-                  <p className="text-sm font-medium text-slate-900">View Alerts</p>
-                  <p className="text-xs text-slate-500">23 critical alerts</p>
-                </button>
-                <button className="p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors text-left">
-                  <Users className="h-5 w-5 text-blue-500 mb-2" />
-                  <p className="text-sm font-medium text-slate-900">Manage Users</p>
-                  <p className="text-xs text-slate-500">156 active users</p>
-                </button>
-                <button className="p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors text-left">
-                  <Activity className="h-5 w-5 text-green-500 mb-2" />
-                  <p className="text-sm font-medium text-slate-900">System Status</p>
-                  <p className="text-xs text-slate-500">All systems operational</p>
-                </button>
+              <h2 className="text-lg font-semibold text-slate-900 mb-2">Log Sources Overview</h2>
+              <p className="text-slate-600 mb-6">Daily volumes, costs, and optimization efficiency per source</p>
+              <div className="border border-slate-200 rounded-lg overflow-hidden">
+                <div className="grid grid-cols-7 gap-4 px-4 py-3 bg-slate-50 border-b border-slate-200">
+                  <div className="text-sm font-semibold text-slate-900">Source Name</div>
+                  <div className="text-sm font-semibold text-slate-900">Daily Volume</div>
+                  <div className="text-sm font-semibold text-slate-900">Monthly Volume</div>
+                  <div className="text-sm font-semibold text-slate-900">Monthly Cost (Before Optimization)</div>
+                  <div className="text-sm font-semibold text-slate-900">Optimized Volume</div>
+                  <div className="text-sm font-semibold text-slate-900">Monthly Savings</div>
+                  <div className="text-sm font-semibold text-slate-900">Reduction %</div>
+                </div>
+                <div className="divide-y divide-slate-100">
+                  <div className="grid grid-cols-7 gap-4 px-4 py-3 hover:bg-slate-50 transition-colors">
+                    <div className="text-sm text-slate-900 font-medium">Windows Event Logs</div>
+                    <div className="text-sm text-slate-700">12.3 GB</div>
+                    <div className="text-sm text-slate-700">369 GB</div>
+                    <div className="text-sm text-red-600 font-medium">$1,845</div>
+                    <div className="text-sm text-teal-600 font-medium">129 GB</div>
+                    <div className="text-sm text-green-600 font-medium">$1,199</div>
+                    <div className="text-sm text-brand-primary font-semibold">65%</div>
+                  </div>
+                  <div className="grid grid-cols-7 gap-4 px-4 py-3 hover:bg-slate-50 transition-colors">
+                    <div className="text-sm text-slate-900 font-medium">Linux Syslog Logs</div>
+                    <div className="text-sm text-slate-700">10.8 GB</div>
+                    <div className="text-sm text-slate-700">324 GB</div>
+                    <div className="text-sm text-red-600 font-medium">$1,620</div>
+                    <div className="text-sm text-teal-600 font-medium">104 GB</div>
+                    <div className="text-sm text-green-600 font-medium">$1,102</div>
+                    <div className="text-sm text-brand-primary font-semibold">68%</div>
+                  </div>
+                  <div className="grid grid-cols-7 gap-4 px-4 py-3 hover:bg-slate-50 transition-colors">
+                    <div className="text-sm text-slate-900 font-medium">AWS Logs</div>
+                    <div className="text-sm text-slate-700">15.2 GB</div>
+                    <div className="text-sm text-slate-700">456 GB</div>
+                    <div className="text-sm text-red-600 font-medium">$2,280</div>
+                    <div className="text-sm text-teal-600 font-medium">182 GB</div>
+                    <div className="text-sm text-green-600 font-medium">$1,368</div>
+                    <div className="text-sm text-brand-primary font-semibold">60%</div>
+                  </div>
+                  <div className="grid grid-cols-7 gap-4 px-4 py-3 hover:bg-slate-50 transition-colors">
+                    <div className="text-sm text-slate-900 font-medium">Entra ID Logs</div>
+                    <div className="text-sm text-slate-700">8.7 GB</div>
+                    <div className="text-sm text-slate-700">261 GB</div>
+                    <div className="text-sm text-red-600 font-medium">$1,305</div>
+                    <div className="text-sm text-teal-600 font-medium">78 GB</div>
+                    <div className="text-sm text-green-600 font-medium">$914</div>
+                    <div className="text-sm text-brand-primary font-semibold">70%</div>
+                  </div>
+                  <div className="grid grid-cols-7 gap-4 px-4 py-3 hover:bg-slate-50 transition-colors">
+                    <div className="text-sm text-slate-900 font-medium">Palo Alto Firewall Logs</div>
+                    <div className="text-sm text-slate-700">14.6 GB</div>
+                    <div className="text-sm text-slate-700">438 GB</div>
+                    <div className="text-sm text-red-600 font-medium">$2,190</div>
+                    <div className="text-sm text-teal-600 font-medium">149 GB</div>
+                    <div className="text-sm text-green-600 font-medium">$1,445</div>
+                    <div className="text-sm text-brand-primary font-semibold">66%</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
