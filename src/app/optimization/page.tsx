@@ -17,6 +17,7 @@ interface OptimizationCard {
   period: string;
   description: string;
   reduction: string;
+  eventCount: string;
   savings: string;
   risk: string;
   sample: { line1: string; line2: string };
@@ -37,6 +38,7 @@ export default function OptimizationInitiatives() {
       period: "Daily reduction",
       description: "Filter out verbose debug logging from Windows Event logs to reduce noise and storage costs",
       reduction: "25% reduction",
+      eventCount: "9.8k events",
       savings: "$161/month",
       risk: "Low risk",
       sample: {
@@ -53,6 +55,7 @@ export default function OptimizationInitiatives() {
       period: "Annual reduction",
       description: "Convert logs with numerical patterns (response_time) into a metric. This reduces log volume by 80% while maintaining operational insight.",
       reduction: "80% reduction",
+      eventCount: "1.2m events",
       savings: "$2,845/month",
       risk: "Low risk",
       sample: {
@@ -69,6 +72,7 @@ export default function OptimizationInitiatives() {
       period: "Annual reduction",
       description: "Advanced algorithm optimizing compression based on log patterns and access frequency across all log sources.",
       reduction: "65% reduction",
+      eventCount: "2.4m events",
       savings: "$3,247/month",
       risk: "Low risk",
       sample: {
@@ -85,6 +89,7 @@ export default function OptimizationInitiatives() {
       period: "Annual reduction",
       description: "Implement intelligent retention policies that automatically archive old logs while preserving critical data for compliance.",
       reduction: "45% reduction",
+      eventCount: "850k events",
       savings: "$1,892/month",
       risk: "Medium risk",
       sample: {
@@ -101,6 +106,7 @@ export default function OptimizationInitiatives() {
       period: "Annual reduction",
       description: "Consolidate repetitive error messages into aggregated alerts while maintaining visibility into critical issues.",
       reduction: "70% reduction",
+      eventCount: "320k events",
       savings: "$1,156/month",
       risk: "Medium risk",
       sample: {
@@ -117,6 +123,7 @@ export default function OptimizationInitiatives() {
       period: "Annual reduction",
       description: "Implement intelligent sampling for performance metrics, capturing representative data while reducing volume by 60%.",
       reduction: "60% reduction",
+      eventCount: "1.8m events",
       savings: "$2,134/month",
       risk: "Low risk",
       sample: {
@@ -133,6 +140,7 @@ export default function OptimizationInitiatives() {
       period: "Annual reduction",
       description: "Automatically mask or redact sensitive information while maintaining log structure for analysis and compliance requirements.",
       reduction: "35% reduction",
+      eventCount: "650k events",
       savings: "$1,589/month",
       risk: "High risk",
       sample: {
@@ -149,6 +157,7 @@ export default function OptimizationInitiatives() {
       period: "Annual reduction",
       description: "Standardize log formats across different systems to reduce redundancy and improve compression efficiency.",
       reduction: "50% reduction",
+      eventCount: "3.1m events",
       savings: "$2,987/month",
       risk: "High risk",
       sample: {
@@ -297,7 +306,7 @@ export default function OptimizationInitiatives() {
 
                   <div className="flex flex-wrap gap-2 mb-4">
                     <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded border border-blue-200">
-                      {card.reduction}
+                      {card.reduction} <span className="text-slate-500 font-normal">({card.eventCount})</span>
                     </span>
                     <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-xs font-medium rounded border border-green-200">
                       {card.savings}
