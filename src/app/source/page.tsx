@@ -1,7 +1,10 @@
 "use client";
 
 import { Sidebar } from "@/components/ui/sidebar";
-import { Edit, Trash2, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
+import { Edit, Trash2, CheckCircle, AlertTriangle, XCircle, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { AddSourceDrawer } from "@/components/ui/add-source-drawer";
 
 const sourceData = [
   {
@@ -67,6 +70,8 @@ const sourceData = [
 ];
 
 export default function SourceManagement() {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   const getStatusBadge = (status: string, errors: string | null) => {
     if (status === "active" && !errors) {
       return (
@@ -114,9 +119,18 @@ export default function SourceManagement() {
         {/* Header */}
         <header className="bg-white border-b border-slate-200 px-6 py-4">
           <div className="max-w-7xl mx-auto">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">Source Management</h1>
-              <p className="text-slate-600 mt-1">Manage and monitor your log sources, volumes, and optimization metrics</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900">Source Management</h1>
+                <p className="text-slate-600 mt-1">Manage and monitor your log sources, volumes, and optimization metrics</p>
+              </div>
+              <Button 
+                onClick={() => setIsDrawerOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Add a source
+              </Button>
             </div>
           </div>
         </header>
@@ -181,6 +195,12 @@ export default function SourceManagement() {
           </div>
         </main>
       </div>
+      
+      {/* Add Source Drawer */}
+      <AddSourceDrawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)} 
+      />
     </div>
   );
 }

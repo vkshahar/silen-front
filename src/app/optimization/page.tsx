@@ -80,7 +80,7 @@ export default function OptimizationInitiatives() {
                 <div className="mb-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="text-sm text-slate-600">Remove Debug Logs</div>
-                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full mr-8">
                       Windows Event Logs
                     </span>
                   </div>
@@ -123,7 +123,7 @@ export default function OptimizationInitiatives() {
                 <div className="mb-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="text-sm text-slate-600">Turn logs into a metric</div>
-                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full mr-8">
                       All Log Sources
                     </span>
                   </div>
@@ -166,7 +166,7 @@ export default function OptimizationInitiatives() {
                 <div className="mb-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="text-sm text-slate-600">Smart Compression</div>
-                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full mr-8">
                       Linux Syslogs
                     </span>
                   </div>
