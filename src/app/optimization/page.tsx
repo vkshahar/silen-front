@@ -296,7 +296,9 @@ export default function OptimizationInitiatives() {
                         {card.source}
                       </span>
                     </div>
-                    <div className="text-3xl font-bold text-slate-900 mb-1">{card.volume}</div>
+                    <div className="text-3xl font-bold text-slate-900 mb-1">
+                      {card.volume} <span className="text-slate-500 font-normal text-lg">({card.eventCount})</span>
+                    </div>
                     <div className="text-sm text-slate-500">{card.period}</div>
                   </div>
 
@@ -306,7 +308,7 @@ export default function OptimizationInitiatives() {
 
                   <div className="flex flex-wrap gap-2 mb-4">
                     <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded border border-blue-200">
-                      {card.reduction} <span className="text-slate-500 font-normal">({card.eventCount})</span>
+                      {card.reduction}
                     </span>
                     <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-xs font-medium rounded border border-green-200">
                       {card.savings}
