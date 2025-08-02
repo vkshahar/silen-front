@@ -74,9 +74,9 @@ export function IngressEgressChart() {
     <Card>
       <CardHeader className="flex items-center gap-2 space-y-0 py-5 sm:flex-row">
         <div className="grid flex-1 gap-1 text-center sm:text-left">
-          <CardTitle>Network Traffic</CardTitle>
+          <CardTitle>Log volumes</CardTitle>
           <CardDescription>
-            Showing ingress and egress traffic for the selected period
+            Showing ingress and egress traffic for the last 30 days
           </CardDescription>
         </div>
       </CardHeader>

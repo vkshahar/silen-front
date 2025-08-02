@@ -1,6 +1,7 @@
 "use client";
 
 import { Sidebar } from "@/components/ui/sidebar";
+import { MetricCard } from "@/components/ui/metric-card";
 import { Target, TrendingUp, Zap, Shield, Database, BarChart3, AlertCircle, Search, Activity } from "lucide-react";
 
 export default function OptimizationInitiatives() {
@@ -24,202 +25,165 @@ export default function OptimizationInitiatives() {
         <main className="px-6 py-8">
           <div className="max-w-7xl mx-auto space-y-8">
             
-            {/* Optimization Cards - Vertical Layout */}
-            <div className="space-y-6">
+            {/* Optimization Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <MetricCard
+                title="Total Potential Savings"
+                value="$6,253"
+                change="+24%"
+                changeType="positive"
+                icon={TrendingUp}
+              />
+              <MetricCard
+                title="Average Reduction Rate"
+                value="56.7%"
+                change="+12%"
+                changeType="positive"
+                icon={Target}
+              />
+              <MetricCard
+                title="Active Optimizations"
+                value="1"
+                change="0"
+                changeType="neutral"
+                icon={Database}
+              />
+              <MetricCard
+                title="Pending Initiatives"
+                value="2"
+                change="+2"
+                changeType="positive"
+                icon={BarChart3}
+              />
+            </div>
+            
+            {/* Optimization Cards - 3 Column Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               
               {/* Remove Debug Logs Card */}
-              <div className="bg-white rounded-xl border border-slate-200 p-6">
-                <div className="flex items-start justify-between mb-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2">Remove Debug Logs</h3>
-                    <div className="mb-2">
-                      <div className="text-4xl font-bold text-slate-900">15GB</div>
-                      <div className="text-sm text-slate-500 uppercase tracking-wide">DAILY REDUCTION</div>
-                    </div>
+              <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow flex flex-col">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <div className="text-sm text-slate-600 mb-1">Remove Debug Logs</div>
+                    <div className="text-3xl font-bold text-slate-900 mb-1">15GB</div>
+                    <div className="text-sm text-slate-500">Daily reduction</div>
                   </div>
-                  <span className="inline-block px-2 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-full">
-                    Pending
+                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                    Windows Event Logs
                   </span>
                 </div>
 
-                <div className="mb-6">
-                  <h4 className="text-sm font-semibold text-slate-900 mb-2">Action:</h4>
-                  <p className="text-sm text-slate-600 leading-relaxed">
-                    Filter out verbose debug logging from Windows Event logs to reduce noise and storage costs
-                  </p>
+                <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                  Filter out verbose debug logging from Windows Event logs to reduce noise and storage costs
+                </p>
+
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded border border-blue-200">
+                    25% reduction
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-xs font-medium rounded border border-green-200">
+                    $161/month
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-slate-50 text-slate-700 text-xs font-medium rounded border border-slate-200">
+                    Low risk
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-6 mb-6">
-                  <div>
-                    <div className="text-sm text-slate-500 mb-1">Reduction</div>
-                    <div className="text-xl font-bold text-green-600">25.0%</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-slate-500 mb-1">Security Impact</div>
-                    <div className="text-xl font-bold text-slate-600">2/10</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-slate-500 mb-1">Monthly Savings</div>
-                    <div className="text-xl font-bold text-blue-600">$161.438</div>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <h4 className="text-sm font-semibold text-slate-900 mb-3">Sample</h4>
+                <div className="mb-6 flex-1">
+                  <h4 className="text-sm font-semibold text-slate-900 mb-2">Sample</h4>
                   <div className="bg-slate-50 rounded-lg p-3 font-mono text-xs text-slate-600">
-                    DEBUG 2025-01-07T12:00:00Z process_id=1234 thread_id=5678<br/>
-                    module=authentication user_session=abc123<br/>
-                    message="Debug: validating user credentials step 1 of 12"
-                  </div>
-                  <div className="text-xs text-slate-500 mt-2">
-                    Detected 15M debug entries in the last 24 hours.
+                    DEBUG 2025-01-07T12:00:00Z process_id=1234<br/>
+                    module=auth message="Debug step 1 of 12"
                   </div>
                 </div>
 
-                <div className="flex gap-3">
-                  <button className="flex items-center justify-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                    <AlertCircle className="w-4 h-4" />
-                    Check Alerts
-                  </button>
-                  <button className="flex items-center justify-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                    <Search className="w-4 h-4" />
-                    Check History
-                  </button>
-                  <button className="flex items-center justify-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-lg text-sm font-medium hover:bg-brand-dark transition-colors">
-                    <Zap className="w-4 h-4" />
-                    Implement
-                  </button>
-                </div>
+                <button className="w-full bg-slate-900 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-slate-800 transition-colors mt-auto">
+                  Apply
+                </button>
               </div>
 
               {/* Turn logs into a metric Card */}
-              <div className="bg-white rounded-xl border border-slate-200 p-6">
-                <div className="flex items-start justify-between mb-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2">Turn logs into a metric</h3>
-                    <div className="mb-2">
-                      <div className="text-4xl font-bold text-slate-900">1.2TB</div>
-                      <div className="text-sm text-slate-500 uppercase tracking-wide">ANNUAL REDUCTION</div>
-                    </div>
+              <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow flex flex-col">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <div className="text-sm text-slate-600 mb-1">Turn logs into a metric</div>
+                    <div className="text-3xl font-bold text-slate-900 mb-1">1.2TB</div>
+                    <div className="text-sm text-slate-500">Annual reduction</div>
                   </div>
-                  <div className="w-8 h-8 rounded-lg bg-brand-primary/10 flex items-center justify-center">
-                    <Target className="w-4 h-4 text-brand-primary" />
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <h4 className="text-sm font-semibold text-slate-900 mb-2">Action:</h4>
-                  <p className="text-sm text-slate-600 leading-relaxed">
-                    Convert logs with numerical patterns (response_time) into a metric. This reduces log volume by 80% while maintaining operational insight.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-3 gap-6 mb-6">
-                  <div>
-                    <div className="text-sm text-slate-500 mb-1">Volume Reduction</div>
-                    <div className="text-xl font-bold text-green-600">80%</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-slate-500 mb-1">Data Preserved</div>
-                    <div className="text-xl font-bold text-slate-600">95%</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-slate-500 mb-1">Monthly Savings</div>
-                    <div className="text-xl font-bold text-blue-600">$2,845</div>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <h4 className="text-sm font-semibold text-slate-900 mb-3">Sample</h4>
-                  <div className="bg-slate-50 rounded-lg p-3 font-mono text-xs text-slate-600">
-                    INFO 2025-01-07T12:00:00Z request_id=abc123 user_id=user456<br/>
-                    endpoint=/api/v1/orders status_code=200 response_time_ms=120<br/>
-                    message="Request completed"
-                  </div>
-                  <div className="text-xs text-slate-500 mt-2">
-                    Detected 10M similar patterns in the last 24 hours.
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <button className="flex items-center justify-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                    <BarChart3 className="w-4 h-4" />
-                    Preview
-                  </button>
-                  <button className="flex items-center justify-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                    <Target className="w-4 h-4" />
-                    Configure
-                  </button>
-                  <button className="flex items-center justify-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-lg text-sm font-medium hover:bg-brand-dark transition-colors">
-                    <Zap className="w-4 h-4" />
-                    Apply
-                  </button>
-                </div>
-              </div>
-
-              {/* Smart Compression Card */}
-              <div className="bg-white rounded-xl border border-slate-200 p-6">
-                <div className="flex items-start justify-between mb-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2">Smart Compression</h3>
-                    <div className="mb-2">
-                      <div className="text-4xl font-bold text-slate-900">3.8TB</div>
-                      <div className="text-sm text-slate-500 uppercase tracking-wide">ANNUAL REDUCTION</div>
-                    </div>
-                  </div>
-                  <span className="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
-                    Active
+                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                    All Log Sources
                   </span>
                 </div>
 
-                <div className="mb-6">
-                  <h4 className="text-sm font-semibold text-slate-900 mb-2">Action:</h4>
-                  <p className="text-sm text-slate-600 leading-relaxed">
-                    Advanced algorithm optimizing compression based on log patterns and access frequency across all log sources.
-                  </p>
+                <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                  Convert logs with numerical patterns (response_time) into a metric. This reduces log volume by 80% while maintaining operational insight.
+                </p>
+
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded border border-blue-200">
+                    80% reduction
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-xs font-medium rounded border border-green-200">
+                    $2,845/month
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-slate-50 text-slate-700 text-xs font-medium rounded border border-slate-200">
+                    No risk
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-6 mb-6">
-                  <div>
-                    <div className="text-sm text-slate-500 mb-1">Compression Rate</div>
-                    <div className="text-xl font-bold text-green-600">65.2%</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-slate-500 mb-1">Performance Impact</div>
-                    <div className="text-xl font-bold text-slate-600">1/10</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-slate-500 mb-1">Monthly Savings</div>
-                    <div className="text-xl font-bold text-blue-600">$3,247</div>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <h4 className="text-sm font-semibold text-slate-900 mb-3">Sample</h4>
+                <div className="mb-6 flex-1">
+                  <h4 className="text-sm font-semibold text-slate-900 mb-2">Sample</h4>
                   <div className="bg-slate-50 rounded-lg p-3 font-mono text-xs text-slate-600">
-                    INFO 2025-01-07T12:00:00Z src=192.168.1.100 dst=10.0.0.5<br/>
-                    protocol=TCP port=443 bytes_sent=1024 bytes_received=2048<br/>
-                    status=established duration=120ms
-                  </div>
-                  <div className="text-xs text-slate-500 mt-2">
-                    Optimizing 25M network logs daily with adaptive compression.
+                    INFO request_id=abc123 endpoint=/api/v1/orders<br/>
+                    status_code=200 response_time_ms=120
                   </div>
                 </div>
 
-                <div className="flex gap-3">
-                  <button className="flex items-center justify-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                    <BarChart3 className="w-4 h-4" />
-                    View Stats
-                  </button>
-                  <button className="flex items-center justify-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                    <Target className="w-4 h-4" />
-                    Configure
-                  </button>
-                  <button className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 text-slate-500 rounded-lg text-sm font-medium cursor-not-allowed">
-                    <Shield className="w-4 h-4" />
-                    Running
-                  </button>
+                <button className="w-full bg-slate-900 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-slate-800 transition-colors mt-auto">
+                  Apply
+                </button>
+              </div>
+
+              {/* Smart Compression Card */}
+              <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow flex flex-col">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <div className="text-sm text-slate-600 mb-1">Smart Compression</div>
+                    <div className="text-3xl font-bold text-slate-900 mb-1">3.8TB</div>
+                    <div className="text-sm text-slate-500">Annual reduction</div>
+                  </div>
+                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                    Linux Syslogs
+                  </span>
                 </div>
+
+                <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                  Advanced algorithm optimizing compression based on log patterns and access frequency across all log sources.
+                </p>
+
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded border border-blue-200">
+                    65% reduction
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-xs font-medium rounded border border-green-200">
+                    $3,247/month
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-slate-50 text-slate-700 text-xs font-medium rounded border border-slate-200">
+                    Low impact
+                  </span>
+                </div>
+
+                <div className="mb-6 flex-1">
+                  <h4 className="text-sm font-semibold text-slate-900 mb-2">Sample</h4>
+                  <div className="bg-slate-50 rounded-lg p-3 font-mono text-xs text-slate-600">
+                    INFO src=192.168.1.100 dst=10.0.0.5<br/>
+                    protocol=TCP port=443 bytes_sent=1024
+                  </div>
+                </div>
+
+                <button className="w-full bg-slate-100 text-slate-500 rounded-lg px-4 py-2 text-sm font-medium cursor-not-allowed mt-auto">
+                  Running
+                </button>
               </div>
 
             </div>

@@ -23,7 +23,7 @@ export default function Dashboard() {
           <div className="max-w-7xl mx-auto">
             <div>
               <h1 className="text-2xl font-bold text-slate-900">Security Dashboard</h1>
-              <p className="text-slate-600 mt-1">Monitor your security metrics and network traffic</p>
+              <p className="text-slate-600 mt-1">Monitor your log volumes traffic</p>
             </div>
           </div>
         </header>
