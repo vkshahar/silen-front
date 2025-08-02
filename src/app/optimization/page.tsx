@@ -33,8 +33,8 @@ export default function OptimizationInitiatives() {
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 mb-2">Remove Debug Logs</h3>
                     <div className="mb-2">
-                      <div className="text-4xl font-bold text-slate-900">250GB</div>
-                      <div className="text-sm text-slate-500 uppercase tracking-wide">ANNUAL REDUCTION</div>
+                      <div className="text-4xl font-bold text-slate-900">15GB</div>
+                      <div className="text-sm text-slate-500 uppercase tracking-wide">DAILY REDUCTION</div>
                     </div>
                   </div>
                   <span className="inline-block px-2 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-full">
