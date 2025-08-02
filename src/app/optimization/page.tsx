@@ -47,7 +47,7 @@ export default function OptimizationInitiatives() {
               />
               <MetricCard
                 title="Recommended Optimizations"
-                value="1"
+                value="6"
                 changeType="neutral"
                 icon={Database}
               />
@@ -62,10 +62,10 @@ export default function OptimizationInitiatives() {
             {/* Manage Active Filters Button */}
             <div className="flex justify-start">
               <Button 
-                variant="secondary" 
+                variant="outline" 
                 size="sm"
                 onClick={() => router.push('/filters')}
-                className="text-sm"
+                className="text-sm border-surface-border bg-white text-slate-700 hover:bg-surface-secondary"
               >
                 Manage active filters
               </Button>
@@ -198,8 +198,137 @@ export default function OptimizationInitiatives() {
                   </div>
                 </div>
 
-                <button className="w-full bg-slate-100 text-slate-500 rounded-lg px-4 py-2 text-sm font-medium cursor-not-allowed mt-auto">
-                  Running
+                <button className="w-full bg-slate-900 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-slate-800 transition-colors mt-auto">
+                  Apply
+                </button>
+              </div>
+
+              {/* Log Retention Policy Card */}
+              <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow flex flex-col relative">
+                <QuickActionsDropdown />
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-sm text-slate-600">Log Retention Policy</div>
+                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full mr-8">
+                      Application Logs
+                    </span>
+                  </div>
+                  <div className="text-3xl font-bold text-slate-900 mb-1">2.1TB</div>
+                  <div className="text-sm text-slate-500">Annual reduction</div>
+                </div>
+
+                <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                  Implement intelligent retention policies that automatically archive old logs while preserving critical data for compliance.
+                </p>
+
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded border border-blue-200">
+                    45% reduction
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-xs font-medium rounded border border-green-200">
+                    $1,892/month
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-slate-50 text-slate-700 text-xs font-medium rounded border border-slate-200">
+                    Medium risk
+                  </span>
+                </div>
+
+                <div className="mb-6 flex-1">
+                  <h4 className="text-sm font-semibold text-slate-900 mb-2">Sample</h4>
+                  <div className="bg-slate-50 rounded-lg p-3 font-mono text-xs text-slate-600">
+                    INFO 2025-01-07T12:00:00Z user_id=456<br/>
+                    action=login status=success retention=90d
+                  </div>
+                </div>
+
+                <button className="w-full bg-slate-900 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-slate-800 transition-colors mt-auto">
+                  Apply
+                </button>
+              </div>
+
+              {/* Error Log Aggregation Card */}
+              <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow flex flex-col relative">
+                <QuickActionsDropdown />
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-sm text-slate-600">Error Log Aggregation</div>
+                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full mr-8">
+                      Error Logs
+                    </span>
+                  </div>
+                  <div className="text-3xl font-bold text-slate-900 mb-1">850GB</div>
+                  <div className="text-sm text-slate-500">Annual reduction</div>
+                </div>
+
+                <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                  Consolidate repetitive error messages into aggregated alerts while maintaining visibility into critical issues.
+                </p>
+
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded border border-blue-200">
+                    70% reduction
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-xs font-medium rounded border border-green-200">
+                    $1,156/month
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-slate-50 text-slate-700 text-xs font-medium rounded border border-slate-200">
+                    Low risk
+                  </span>
+                </div>
+
+                <div className="mb-6 flex-1">
+                  <h4 className="text-sm font-semibold text-slate-900 mb-2">Sample</h4>
+                  <div className="bg-slate-50 rounded-lg p-3 font-mono text-xs text-slate-600">
+                    ERROR 2025-01-07T12:00:00Z code=500<br/>
+                    message="Database connection timeout" count=127
+                  </div>
+                </div>
+
+                <button className="w-full bg-slate-900 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-slate-800 transition-colors mt-auto">
+                  Apply
+                </button>
+              </div>
+
+              {/* Performance Log Sampling Card */}
+              <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow flex flex-col relative">
+                <QuickActionsDropdown />
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-sm text-slate-600">Performance Log Sampling</div>
+                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full mr-8">
+                      Performance Logs
+                    </span>
+                  </div>
+                  <div className="text-3xl font-bold text-slate-900 mb-1">1.5TB</div>
+                  <div className="text-sm text-slate-500">Annual reduction</div>
+                </div>
+
+                <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                  Implement intelligent sampling for performance metrics, capturing representative data while reducing volume by 60%.
+                </p>
+
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded border border-blue-200">
+                    60% reduction
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-xs font-medium rounded border border-green-200">
+                    $2,134/month
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-slate-50 text-slate-700 text-xs font-medium rounded border border-slate-200">
+                    No risk
+                  </span>
+                </div>
+
+                <div className="mb-6 flex-1">
+                  <h4 className="text-sm font-semibold text-slate-900 mb-2">Sample</h4>
+                  <div className="bg-slate-50 rounded-lg p-3 font-mono text-xs text-slate-600">
+                    PERF 2025-01-07T12:00:00Z endpoint=/api/users<br/>
+                    response_time=45ms memory_usage=128MB sample_rate=0.1
+                  </div>
+                </div>
+
+                <button className="w-full bg-slate-900 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-slate-800 transition-colors mt-auto">
+                  Apply
                 </button>
               </div>
 
