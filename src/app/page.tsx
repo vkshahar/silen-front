@@ -3,6 +3,7 @@
 import { Sidebar } from "@/components/ui/sidebar";
 import { MetricCard } from "@/components/ui/metric-card";
 import { IngressEgressChart } from "@/components/ui/ingress-egress-chart";
+import { SimpleFlowChart } from "@/components/ui/simple-flow-chart";
 import { 
   Calendar,
   ArrowDown,
@@ -78,8 +79,9 @@ export default function Dashboard() {
             </div>
 
             {/* Charts Section */}
-            <div className="w-full">
+            <div className="w-full space-y-8">
               <IngressEgressChart />
+              <SimpleFlowChart />
             </div>
 
             {/* Log Sources Table */}
