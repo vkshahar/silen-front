@@ -166,6 +166,32 @@ export default function OptimizationInitiatives() {
     return optimizationCards.filter(card => selectedRisks.includes(card.risk));
   }, [selectedRisks]);
 
+  // Calculate counts for each risk level
+  const riskCounts = useMemo(() => {
+    const counts = {
+      "Low risk": 0,
+      "Medium risk": 0,
+      "High risk": 0
+    };
+    
+    optimizationCards.forEach(card => {
+      if (counts.hasOwnProperty(card.risk)) {
+        counts[card.risk as keyof typeof counts]++;
+      }
+    });
+    
+    return counts;
+  }, []);
+
+  // Create options with counts
+  const riskOptions = useMemo(() => {
+    return [
+      `Low risk (${riskCounts["Low risk"]})`,
+      `Medium risk (${riskCounts["Medium risk"]})`,
+      `High risk (${riskCounts["High risk"]})`
+    ];
+  }, [riskCounts]);
+
   const getRiskTagColors = (risk: string) => {
     const lowerRisk = risk.toLowerCase();
     if (lowerRisk.includes('low')) {
@@ -244,7 +270,7 @@ export default function OptimizationInitiatives() {
                 </Button>
               </div>
               <SelectorChips 
-                options={["Low risk", "Medium risk", "High risk"]}
+                options={riskOptions}
                 onChange={setSelectedRisks}
               />
             </div>
