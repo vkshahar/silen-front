@@ -2,9 +2,13 @@
 
 import { Sidebar } from "@/components/ui/sidebar";
 import { MetricCard } from "@/components/ui/metric-card";
+import { QuickActionsDropdown } from "@/components/ui/dropdown-menu-demo";
 import { Target, TrendingUp, Zap, Shield, Database, BarChart3, AlertCircle, Search, Activity } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export default function OptimizationInitiatives() {
+  const router = useRouter();
   return (
     <div className="flex min-h-screen bg-surface-secondary">
       <Sidebar />
@@ -28,7 +32,7 @@ export default function OptimizationInitiatives() {
             {/* Optimization Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <MetricCard
-                title="Total Potential Savings"
+                title="Total Savings"
                 value="$6,253"
                 change="+24%"
                 changeType="positive"
@@ -42,35 +46,46 @@ export default function OptimizationInitiatives() {
                 icon={Target}
               />
               <MetricCard
-                title="Active Optimizations"
+                title="Recommended Optimizations"
                 value="1"
-                change="0"
                 changeType="neutral"
                 icon={Database}
               />
               <MetricCard
-                title="Pending Initiatives"
+                title="Active filters"
                 value="2"
-                change="+2"
                 changeType="positive"
                 icon={BarChart3}
               />
+            </div>
+            
+            {/* Manage Active Filters Button */}
+            <div className="flex justify-start">
+              <Button 
+                variant="secondary" 
+                size="sm"
+                onClick={() => router.push('/filters')}
+                className="text-sm"
+              >
+                Manage active filters
+              </Button>
             </div>
             
             {/* Optimization Cards - 3 Column Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               
               {/* Remove Debug Logs Card */}
-              <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow flex flex-col">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="text-sm text-slate-600 mb-1">Remove Debug Logs</div>
-                    <div className="text-3xl font-bold text-slate-900 mb-1">15GB</div>
-                    <div className="text-sm text-slate-500">Daily reduction</div>
+              <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow flex flex-col relative">
+                <QuickActionsDropdown />
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-sm text-slate-600">Remove Debug Logs</div>
+                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                      Windows Event Logs
+                    </span>
                   </div>
-                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
-                    Windows Event Logs
-                  </span>
+                  <div className="text-3xl font-bold text-slate-900 mb-1">15GB</div>
+                  <div className="text-sm text-slate-500">Daily reduction</div>
                 </div>
 
                 <p className="text-sm text-slate-600 leading-relaxed mb-4">
@@ -103,16 +118,17 @@ export default function OptimizationInitiatives() {
               </div>
 
               {/* Turn logs into a metric Card */}
-              <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow flex flex-col">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="text-sm text-slate-600 mb-1">Turn logs into a metric</div>
-                    <div className="text-3xl font-bold text-slate-900 mb-1">1.2TB</div>
-                    <div className="text-sm text-slate-500">Annual reduction</div>
+              <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow flex flex-col relative">
+                <QuickActionsDropdown />
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-sm text-slate-600">Turn logs into a metric</div>
+                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                      All Log Sources
+                    </span>
                   </div>
-                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
-                    All Log Sources
-                  </span>
+                  <div className="text-3xl font-bold text-slate-900 mb-1">1.2TB</div>
+                  <div className="text-sm text-slate-500">Annual reduction</div>
                 </div>
 
                 <p className="text-sm text-slate-600 leading-relaxed mb-4">
@@ -145,16 +161,17 @@ export default function OptimizationInitiatives() {
               </div>
 
               {/* Smart Compression Card */}
-              <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow flex flex-col">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="text-sm text-slate-600 mb-1">Smart Compression</div>
-                    <div className="text-3xl font-bold text-slate-900 mb-1">3.8TB</div>
-                    <div className="text-sm text-slate-500">Annual reduction</div>
+              <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow flex flex-col relative">
+                <QuickActionsDropdown />
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-sm text-slate-600">Smart Compression</div>
+                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                      Linux Syslogs
+                    </span>
                   </div>
-                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
-                    Linux Syslogs
-                  </span>
+                  <div className="text-3xl font-bold text-slate-900 mb-1">3.8TB</div>
+                  <div className="text-sm text-slate-500">Annual reduction</div>
                 </div>
 
                 <p className="text-sm text-slate-600 leading-relaxed mb-4">
@@ -186,29 +203,6 @@ export default function OptimizationInitiatives() {
                 </button>
               </div>
 
-            </div>
-
-            {/* Summary Stats */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h2 className="text-lg font-semibold text-slate-900 mb-4">Optimization Impact</h2>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600 mb-1">$23,800</div>
-                  <div className="text-sm text-slate-600">Total Monthly Savings</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-brand-primary mb-1">78%</div>
-                  <div className="text-sm text-slate-600">Average Reduction</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600 mb-1">3</div>
-                  <div className="text-sm text-slate-600">Active Initiatives</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-600 mb-1">3</div>
-                  <div className="text-sm text-slate-600">Upcoming Features</div>
-                </div>
-              </div>
             </div>
           </div>
         </main>

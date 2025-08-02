@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { IngressEgressChart } from '@/components/ui/ingress-egress-chart';
+import { QuickActionsDropdown, UserProfileDropdown, ActionsDropdown, SimpleDropdown, DropdownItem } from '@/components/ui/dropdown-menu-demo';
 
 // Sample data for charts
 const lineData = [
@@ -810,6 +811,155 @@ const DashboardStatsSection = () => (
   </section>
 );
 
+const DropdownsSection = () => (
+  <section className="mb-16">
+    <div className="flex items-center gap-3 mb-8">
+      <Info className="w-6 h-6 text-brand-primary" />
+      <h2 className="text-heading-xl font-semibold text-slate-900">Dropdowns & Menus</h2>
+    </div>
+    
+    <div className="grid lg:grid-cols-2 gap-8">
+      {/* Simple Dropdown */}
+      <div className="bg-white rounded-xl border border-surface-border p-6">
+        <h3 className="text-heading-md font-medium mb-6 text-slate-800">Simple Dropdown</h3>
+        <p className="text-body-sm text-slate-600 mb-6">Clean dropdown with smooth animations and proper hover states</p>
+        
+        <div className="flex gap-4 mb-6">
+          <UserProfileDropdown />
+          <ActionsDropdown />
+        </div>
+        
+        <div className="bg-slate-50 rounded-lg p-4">
+          <h4 className="text-sm font-medium text-slate-900 mb-2">Usage</h4>
+          <pre className="text-xs text-slate-600 overflow-x-auto">
+{`<SimpleDropdown trigger={<span>Actions</span>}>
+  <DropdownItem onClick={() => {}}>Edit</DropdownItem>
+  <DropdownItem onClick={() => {}}>Delete</DropdownItem>
+</SimpleDropdown>`}
+          </pre>
+        </div>
+      </div>
+
+      {/* Quick Actions Menu */}
+      <div className="bg-white rounded-xl border border-surface-border p-6 relative">
+        <h3 className="text-heading-md font-medium mb-6 text-slate-800">Quick Actions Menu</h3>
+        <p className="text-body-sm text-slate-600 mb-6">Simple 3-dots menu for card actions with clean dropdown</p>
+        
+        <div className="relative h-32 bg-slate-50 rounded-lg mb-6 overflow-hidden flex items-center justify-center">
+          <div className="relative bg-white rounded-lg border border-slate-200 p-4">
+            <QuickActionsDropdown />
+            <div className="text-sm text-slate-600 mt-8">Card with quick actions</div>
+          </div>
+        </div>
+        
+        <div className="bg-slate-50 rounded-lg p-4">
+          <h4 className="text-sm font-medium text-slate-900 mb-2">Features</h4>
+          <ul className="text-xs text-slate-600 space-y-1">
+            <li>• Minimal 3-dots trigger button</li>
+            <li>• Positioned in top-right corner</li>
+            <li>• Check Alerts and Check History actions</li>
+            <li>• Clean hover states and transitions</li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Dropdown Variants */}
+      <div className="bg-white rounded-xl border border-surface-border p-6">
+        <h3 className="text-heading-md font-medium mb-6 text-slate-800">Dropdown Variants</h3>
+        <p className="text-body-sm text-slate-600 mb-6">Different styles and configurations for various use cases</p>
+        
+        <div className="space-y-4 mb-6">
+          <div>
+            <h4 className="text-sm font-medium text-slate-900 mb-2">User Profile</h4>
+            <UserProfileDropdown />
+          </div>
+          
+          <div>
+            <h4 className="text-sm font-medium text-slate-900 mb-2">Actions Menu</h4>
+            <ActionsDropdown />
+          </div>
+          
+          <div>
+            <h4 className="text-sm font-medium text-slate-900 mb-2">Custom Trigger</h4>
+            <SimpleDropdown 
+              trigger={
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span className="text-sm">Status: Active</span>
+                </div>
+              }
+            >
+              <DropdownItem>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  Active
+                </div>
+              </DropdownItem>
+              <DropdownItem>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                  Pending
+                </div>
+              </DropdownItem>
+              <DropdownItem>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                  Inactive
+                </div>
+              </DropdownItem>
+            </SimpleDropdown>
+          </div>
+        </div>
+        
+        <div className="bg-slate-50 rounded-lg p-4">
+          <h4 className="text-sm font-medium text-slate-900 mb-2">Best Practices</h4>
+          <ul className="text-xs text-slate-600 space-y-1">
+            <li>• Use consistent spacing (py-2 px-4 for items)</li>
+            <li>• Add separators for grouping related actions</li>
+            <li>• Use red colors for destructive actions</li>
+            <li>• Include icons for better visual hierarchy</li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Implementation Guide */}
+      <div className="bg-white rounded-xl border border-surface-border p-6">
+        <h3 className="text-heading-md font-medium mb-6 text-slate-800">Implementation</h3>
+        <p className="text-body-sm text-slate-600 mb-6">How to use dropdown components in your application</p>
+        
+        <div className="space-y-4">
+          <div className="bg-slate-50 rounded-lg p-4">
+            <h4 className="text-sm font-medium text-slate-900 mb-2">Basic Setup</h4>
+            <pre className="text-xs text-slate-600 overflow-x-auto">
+{`import { SimpleDropdown, DropdownItem, QuickActionsDropdown } from '@/components/ui/dropdown-menu-demo'`}
+            </pre>
+          </div>
+          
+          <div className="bg-slate-50 rounded-lg p-4">
+            <h4 className="text-sm font-medium text-slate-900 mb-2">Styling</h4>
+            <ul className="text-xs text-slate-600 space-y-1">
+              <li>• Dropdowns use white background with slate borders</li>
+              <li>• Hover states use slate-50 background</li>
+              <li>• Shadow-lg for elevation</li>
+              <li>• Rounded-lg corners for consistency</li>
+            </ul>
+          </div>
+          
+          <div className="bg-slate-50 rounded-lg p-4">
+            <h4 className="text-sm font-medium text-slate-900 mb-2">Accessibility</h4>
+            <ul className="text-xs text-slate-600 space-y-1">
+              <li>• Keyboard navigation support</li>
+              <li>• Focus management</li>
+              <li>• ARIA labels and roles</li>
+              <li>• Screen reader compatibility</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
 export default function StyleGuide() {
   return (
     <div className="min-h-screen bg-surface-secondary">
@@ -850,6 +1000,7 @@ export default function StyleGuide() {
           <ComponentsSection />
           <ChartsSection />
           <DashboardStatsSection />
+          <DropdownsSection />
 
           {/* Implementation Notes */}
           <section className="mb-16">
