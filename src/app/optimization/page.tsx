@@ -303,15 +303,15 @@ export default function OptimizationInitiatives() {
             {/* Optimization Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <MetricCard
-                title="Total Savings"
-                value="$6,253"
+                title="Possible volume reduction (Daily)"
+                value="155.8GB"
                 change="+24%"
                 changeType="positive"
                 icon={TrendingUp}
               />
               <MetricCard
                 title="Average Reduction Rate"
-                value="56.7%"
+                value="65%"
                 change="+12%"
                 changeType="positive"
                 icon={Target}
