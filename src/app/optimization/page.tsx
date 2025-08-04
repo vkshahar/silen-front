@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { SelectorChips } from "@/components/ui/selector-chips";
 import { useState, useMemo } from "react";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 
 interface OptimizationCard {
   id: string;
@@ -28,6 +30,7 @@ interface OptimizationCard {
 export default function OptimizationInitiatives() {
   const router = useRouter();
   const [selectedRisks, setSelectedRisks] = useState<string[]>([]);
+  const [appliedCards, setAppliedCards] = useState<Set<string>>(new Set());
 
   const optimizationCards: OptimizationCard[] = [
     {
@@ -219,12 +222,25 @@ export default function OptimizationInitiatives() {
     }
   ];
 
+  const handleApplyOptimization = (cardId: string, cardTitle: string) => {
+    // Add card to applied set
+    setAppliedCards(prev => new Set([...prev, cardId]));
+    
+    // Show success toast
+    toast.success("Filter Applied Successfully!", {
+      description: `${cardTitle} has been applied to your log sources.`,
+      duration: 4000,
+    });
+  };
+
   const filteredCards = useMemo(() => {
+    let cards = optimizationCards.filter(card => !appliedCards.has(card.id));
+    
     if (selectedRisks.length === 0) {
-      return optimizationCards;
+      return cards;
     }
-    return optimizationCards.filter(card => selectedRisks.includes(card.risk));
-  }, [selectedRisks]);
+    return cards.filter(card => selectedRisks.includes(card.risk));
+  }, [selectedRisks, appliedCards]);
 
   // Calculate counts for each risk level
   const riskCounts = useMemo(() => {
@@ -263,6 +279,7 @@ export default function OptimizationInitiatives() {
     }
     return "bg-slate-50 text-slate-700 border-slate-200";
   };
+
   return (
     <div className="flex min-h-screen bg-surface-secondary">
       <Sidebar />
@@ -384,6 +401,7 @@ export default function OptimizationInitiatives() {
                         : 'bg-brand-primary text-white hover:bg-brand-dark'
                     }`}
                     disabled={card.buttonDisabled}
+                    onClick={() => handleApplyOptimization(card.id, card.title)}
                   >
                     {card.buttonText}
                   </button>
@@ -393,6 +411,9 @@ export default function OptimizationInitiatives() {
           </div>
         </main>
       </div>
+      
+      {/* Toast Component */}
+      <Toaster />
     </div>
   );
 }
