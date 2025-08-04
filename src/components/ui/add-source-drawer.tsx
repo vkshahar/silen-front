@@ -1,25 +1,48 @@
 "use client";
 
-import React, { useState } from "react";
-import { X, Plus, Shield, AlertCircle } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, Plus, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface AddSourceDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  editData?: {
+    source?: string;
+    type?: string;
+    endpoint?: string;
+    port?: string;
+    protocol?: string;
+    authentication?: string;
+    username?: string;
+    password?: string;
+    description?: string;
+    tags?: string[];
+  } | null;
+  mode?: 'add' | 'edit';
 }
 
-export const AddSourceDrawer: React.FC<AddSourceDrawerProps> = ({ isOpen, onClose }) => {
+export const AddSourceDrawer: React.FC<AddSourceDrawerProps> = ({ 
+  isOpen, 
+  onClose, 
+  editData, 
+  mode = 'add' 
+}) => {
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionSuccess, setConnectionSuccess] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    type: "",
-    endpoint: "",
-    port: "",
-    protocol: "syslog",
-    authentication: "",
-    username: "",
-    password: "",
-    description: "",
+    sourceName: "",
+    sourceType: "Windows Event Logs",
+    collectionModel: "Push Model",
+    collectorAddress: "",
+    transport: "UDP Syslog",
+    port: "514",
+    authToken: "",
+    tlsSettings: "No",
+    metadataHeaders: "",
+    timeZone: "UTC",
+    maxPacketSize: "64KB",
+    retryPolicy: "3 attempts with exponential backoff",
     tags: [] as string[],
     newTag: ""
   });
@@ -35,14 +58,83 @@ export const AddSourceDrawer: React.FC<AddSourceDrawerProps> = ({ isOpen, onClos
     "Custom"
   ];
 
-  const protocols = [
-    "syslog",
-    "tcp",
-    "udp", 
-    "http",
-    "https",
-    "api"
+  const collectionModels = [
+    "Push Model",
+    "Pull Model",
+    "Streaming Model"
   ];
+
+  const transports = [
+    "UDP Syslog",
+    "TCP Syslog", 
+    "HTTP(S)",
+    "gRPC",
+    "MQTT",
+    "Kafka"
+  ];
+
+  const tlsOptions = [
+    "No",
+    "TLS 1.2",
+    "TLS 1.3",
+    "Mutual TLS"
+  ];
+
+  const timeZones = [
+    "UTC",
+    "EST",
+    "PST",
+    "GMT",
+    "Custom Format"
+  ];
+
+  const packetSizes = [
+    "64KB",
+    "128KB", 
+    "256KB",
+    "512KB",
+    "1MB",
+    "2MB"
+  ];
+
+  useEffect(() => {
+    if (editData && mode === 'edit') {
+      setFormData({
+        sourceName: editData.source || '',
+        sourceType: editData.type || 'Windows Event Logs',
+        collectionModel: 'Push Model',
+        collectorAddress: editData.endpoint || '',
+        transport: editData.protocol?.toUpperCase() + ' Syslog' || 'UDP Syslog',
+        port: editData.port || '514',
+        authToken: editData.authentication || '',
+        tlsSettings: 'No',
+        metadataHeaders: '',
+        timeZone: 'UTC',
+        maxPacketSize: '64KB',
+        retryPolicy: '3 attempts with exponential backoff',
+        tags: editData.tags || [],
+        newTag: ''
+      });
+    } else {
+      // Reset form for add mode
+      setFormData({
+        sourceName: "",
+        sourceType: "Windows Event Logs",
+        collectionModel: "Push Model",
+        collectorAddress: "",
+        transport: "UDP Syslog",
+        port: "514",
+        authToken: "",
+        tlsSettings: "No",
+        metadataHeaders: "",
+        timeZone: "UTC",
+        maxPacketSize: "64KB",
+        retryPolicy: "3 attempts with exponential backoff",
+        tags: [],
+        newTag: ""
+      });
+    }
+  }, [editData, mode, isOpen]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -68,121 +160,148 @@ export const AddSourceDrawer: React.FC<AddSourceDrawerProps> = ({ isOpen, onClos
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted:", formData);
-    onClose();
+    setIsConnecting(true);
+    
+    // Simulate connection process
+    await new Promise(resolve => setTimeout(resolve, 2500));
+    
+    setIsConnecting(false);
+    setConnectionSuccess(true);
+    
+    // Show success state briefly then close
+    setTimeout(() => {
+      setConnectionSuccess(false);
+      onClose();
+    }, 1500);
   };
-
-  if (!isOpen) return null;
 
   return (
     <>
       {/* Background Overlay */}
       <div 
-        className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
+        className={`fixed inset-0 bg-black transition-opacity duration-300 z-40 ${
+          isOpen ? 'bg-opacity-50' : 'bg-opacity-0 pointer-events-none'
+        }`}
         onClick={onClose}
       />
       
       {/* Drawer */}
-      <div className="fixed right-0 top-0 h-full w-[600px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out">
+      <div className={`fixed right-0 top-0 h-full w-[700px] bg-white shadow-2xl z-50 transform transition-all duration-300 ease-in-out ${
+        isOpen ? 'translate-x-0' : 'translate-x-full'
+      }`}>
+        
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-slate-50">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-              <Shield className="w-4 h-4 text-red-600" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900">Add New Source</h2>
-              <p className="text-sm text-slate-600">Configure a new log source connection</p>
-            </div>
+        <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-white">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">
+              {mode === 'edit' ? 'Edit Source' : 'Add New Source'}
+            </h2>
+            <p className="text-sm text-slate-600">
+              {mode === 'edit' ? 'Update log source configuration' : 'Configure a new log source connection'}
+            </p>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-slate-200 rounded-lg transition-colors"
+            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
           >
             <X className="w-5 h-5 text-slate-500" />
           </button>
         </div>
 
-        {/* Form Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Form Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto p-6 pb-24">
+          <form onSubmit={handleSubmit} className="space-y-8">
             
-            {/* Source Configuration Section */}
+            {/* Basic Configuration */}
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wide">Source Configuration</h3>
+              <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wide">Basic Configuration</h3>
               
-              {/* Source Name */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-slate-700">
-                  Source Name *
-                </label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange("name", e.target.value)}
-                  placeholder="e.g., Production Web Servers"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors"
-                  required
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-700">
+                    Source Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.sourceName}
+                    onChange={(e) => handleInputChange("sourceName", e.target.value)}
+                    placeholder="e.g., Windows Domain Controllers"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-colors"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-700">
+                    Source Type *
+                  </label>
+                  <select
+                    value={formData.sourceType}
+                    onChange={(e) => handleInputChange("sourceType", e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-colors"
+                    required
+                  >
+                    {sourceTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              {/* Source Type */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-slate-700">
-                  Source Type *
+                  Collection Model *
                 </label>
                 <select
-                  value={formData.type}
-                  onChange={(e) => handleInputChange("type", e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors"
+                  value={formData.collectionModel}
+                  onChange={(e) => handleInputChange("collectionModel", e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-colors"
                   required
                 >
-                  <option value="">Select source type</option>
-                  {sourceTypes.map(type => (
-                    <option key={type} value={type}>{type}</option>
+                  {collectionModels.map(model => (
+                    <option key={model} value={model}>{model}</option>
                   ))}
                 </select>
               </div>
-
-              {/* Description */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-slate-700">
-                  Description
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => handleInputChange("description", e.target.value)}
-                  placeholder="Brief description of this log source..."
-                  rows={3}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors resize-none"
-                />
-              </div>
             </div>
 
-            {/* Connection Details Section */}
+            {/* Connection Details */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wide">Connection Details</h3>
               
-              {/* Endpoint */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-slate-700">
-                  Endpoint/Host *
+                  Collector Address (IP/FQDN) *
                 </label>
                 <input
                   type="text"
-                  value={formData.endpoint}
-                  onChange={(e) => handleInputChange("endpoint", e.target.value)}
-                  placeholder="e.g., 192.168.1.100 or logs.example.com"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors"
+                  value={formData.collectorAddress}
+                  onChange={(e) => handleInputChange("collectorAddress", e.target.value)}
+                  placeholder="192.168.1.100 or collector.domain.com"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-colors"
                   required
                 />
               </div>
 
-              {/* Port and Protocol */}
               <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-700">
+                    Transport & Protocol *
+                  </label>
+                  <select
+                    value={formData.transport}
+                    onChange={(e) => handleInputChange("transport", e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-colors"
+                    required
+                  >
+                    {transports.map(transport => (
+                      <option key={transport} value={transport}>{transport}</option>
+                    ))}
+                  </select>
+                </div>
+
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-slate-700">
                     Port *
@@ -192,90 +311,122 @@ export const AddSourceDrawer: React.FC<AddSourceDrawerProps> = ({ isOpen, onClos
                     value={formData.port}
                     onChange={(e) => handleInputChange("port", e.target.value)}
                     placeholder="514"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-colors"
                     required
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* Security & Authentication */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wide">Security & Authentication</h3>
+              
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-slate-700">
-                    Protocol *
+                    Auth / Token
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.authToken}
+                    onChange={(e) => handleInputChange("authToken", e.target.value)}
+                    placeholder="HEC token, client certificate, shared secret"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-colors"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-700">
+                    TLS Settings
                   </label>
                   <select
-                    value={formData.protocol}
-                    onChange={(e) => handleInputChange("protocol", e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors"
-                    required
+                    value={formData.tlsSettings}
+                    onChange={(e) => handleInputChange("tlsSettings", e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-colors"
                   >
-                    {protocols.map(protocol => (
-                      <option key={protocol} value={protocol}>{protocol.toUpperCase()}</option>
+                    {tlsOptions.map(option => (
+                      <option key={option} value={option}>{option}</option>
                     ))}
                   </select>
                 </div>
               </div>
             </div>
 
-            {/* Authentication Section */}
+            {/* Metadata & Processing */}
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wide">Authentication</h3>
+              <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wide">Metadata & Processing</h3>
               
-              {/* Authentication Type */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-slate-700">
-                  Authentication Type
+                  Metadata Headers
                 </label>
-                <select
-                  value={formData.authentication}
-                  onChange={(e) => handleInputChange("authentication", e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors"
-                >
-                  <option value="">None</option>
-                  <option value="basic">Basic Auth</option>
-                  <option value="api-key">API Key</option>
-                  <option value="certificate">Certificate</option>
-                </select>
+                <input
+                  type="text"
+                  value={formData.metadataHeaders}
+                  onChange={(e) => handleInputChange("metadataHeaders", e.target.value)}
+                  placeholder="sourcetype, index, tenant_id, etc."
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-colors"
+                />
               </div>
 
-              {/* Conditional Auth Fields */}
-              {formData.authentication === "basic" && (
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-slate-700">
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.username}
-                      onChange={(e) => handleInputChange("username", e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-slate-700">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      value={formData.password}
-                      onChange={(e) => handleInputChange("password", e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors"
-                    />
-                  </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-700">
+                    Time Zone / Timestamp Format
+                  </label>
+                  <select
+                    value={formData.timeZone}
+                    onChange={(e) => handleInputChange("timeZone", e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-colors"
+                  >
+                    {timeZones.map(zone => (
+                      <option key={zone} value={zone}>{zone}</option>
+                    ))}
+                  </select>
                 </div>
-              )}
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-700">
+                    Max Packet/Record Size
+                  </label>
+                  <select
+                    value={formData.maxPacketSize}
+                    onChange={(e) => handleInputChange("maxPacketSize", e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-colors"
+                  >
+                    {packetSizes.map(size => (
+                      <option key={size} value={size}>{size}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-slate-700">
+                  Retry Policy
+                </label>
+                <input
+                  type="text"
+                  value={formData.retryPolicy}
+                  onChange={(e) => handleInputChange("retryPolicy", e.target.value)}
+                  placeholder="Retry attempts, backoff strategy"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-colors"
+                />
+              </div>
             </div>
 
             {/* Tags Section */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wide">Tags</h3>
               
-              {/* Add Tag Input */}
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={formData.newTag}
                   onChange={(e) => handleInputChange("newTag", e.target.value)}
                   placeholder="Add a tag..."
-                  className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors"
+                  className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-colors"
                   onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
                 />
                 <Button 
@@ -289,7 +440,6 @@ export const AddSourceDrawer: React.FC<AddSourceDrawerProps> = ({ isOpen, onClos
                 </Button>
               </div>
 
-              {/* Display Tags */}
               {formData.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {formData.tags.map((tag, index) => (
@@ -317,28 +467,49 @@ export const AddSourceDrawer: React.FC<AddSourceDrawerProps> = ({ isOpen, onClos
               <div>
                 <p className="text-sm text-blue-800 font-medium">Configuration Note</p>
                 <p className="text-sm text-blue-700 mt-1">
-                  After adding the source, it may take a few minutes to establish the connection and begin receiving logs.
+                  After {mode === 'edit' ? 'updating' : 'adding'} the source, it may take a few minutes to establish the connection and begin receiving logs.
                 </p>
               </div>
             </div>
           </form>
         </div>
 
-        {/* Footer Actions */}
-        <div className="border-t border-slate-200 p-6 bg-slate-50">
+        {/* Fixed Footer Actions */}
+        <div className="absolute bottom-0 left-0 right-0 border-t border-slate-200 p-6 bg-white">
           <div className="flex items-center justify-end gap-3">
             <Button 
               variant="outline"
               onClick={onClose}
+              disabled={isConnecting}
             >
               Cancel
             </Button>
             <Button 
               onClick={handleSubmit}
-              className="flex items-center gap-2"
+              disabled={isConnecting || connectionSuccess}
+              className={`flex items-center gap-2 min-w-[120px] ${
+                connectionSuccess 
+                  ? 'bg-green-600 hover:bg-green-600' 
+                  : ''
+              }`}
             >
-              <Plus className="w-4 h-4" />
-              Add Source
+              {connectionSuccess ? (
+                <>
+                  <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  Active
+                </>
+              ) : isConnecting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Connecting
+                </>
+              ) : (
+                <>
+                  {mode === 'edit' ? 'Save' : 'Add'}
+                </>
+              )}
             </Button>
           </div>
         </div>

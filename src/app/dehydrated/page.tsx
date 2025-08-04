@@ -14,8 +14,8 @@ interface QueryHistory {
   created: string;
   results: string;
   resultsSize?: string;
-  rehydrationStatus?: "none" | "rehydrating" | "completed";
-  rehydrationDestination?: string;
+  dehydrationStatus?: "none" | "dehydrating" | "completed";
+  dehydrationDestination?: string;
   completedTime?: string;
   estimatedCost?: string;
   logSources?: string[];
@@ -35,7 +35,7 @@ export default function DehydratedLogs() {
       created: "2024-01-08 14:30:00",
       results: "15,420 logs",
       resultsSize: "2.4 GB",
-      rehydrationStatus: "none",
+      dehydrationStatus: "none",
       completedTime: "2024-01-08 14:32:15",
       estimatedCost: "$0.12",
       logSources: ["firewall-logs", "auth-server", "vpn-gateway"]
@@ -47,7 +47,7 @@ export default function DehydratedLogs() {
       query: 'level="ERROR" AND timestamp >= "2023-12-01"',
       created: "2024-01-08 15:45:00",
       results: "—",
-      rehydrationStatus: "none"
+      dehydrationStatus: "none"
     },
     {
       id: "3",
@@ -56,7 +56,7 @@ export default function DehydratedLogs() {
       query: 'source="network-logs" AND bytes > 1000000',
       created: "2024-01-08 16:00:00",
       results: "Query timeout - dataset too large",
-      rehydrationStatus: "none"
+      dehydrationStatus: "none"
     },
     {
       id: "4",
@@ -66,7 +66,7 @@ export default function DehydratedLogs() {
       created: "2024-01-07 09:15:00",
       results: "3,247 logs",
       resultsSize: "892 MB",
-      rehydrationStatus: "none",
+      dehydrationStatus: "none",
       completedTime: "2024-01-07 09:18:32",
       estimatedCost: "$0.08",
       logSources: ["auth-server", "web-gateway"]
@@ -79,7 +79,7 @@ export default function DehydratedLogs() {
       created: "2024-01-06 16:22:00",
       results: "1,854 logs",
       resultsSize: "445 MB",
-      rehydrationStatus: "none",
+      dehydrationStatus: "none",
       completedTime: "2024-01-06 16:25:18",
       estimatedCost: "$0.04",
       logSources: ["mysql-primary", "postgres-replica"]
@@ -163,27 +163,27 @@ export default function DehydratedLogs() {
     setIsResultsModalOpen(true);
   };
 
-  const handleRehydrate = () => {
+  const handleDehydrate = () => {
     if (!selectedQuery || !selectedDestination) return;
 
     const destination = destinations.find(d => d.id === selectedDestination);
     if (!destination) return;
 
-    // Start rehydration process
+    // Start dehydration process
     setQueries(prev => prev.map(q => 
       q.id === selectedQuery.id ? {
         ...q,
-        rehydrationStatus: "rehydrating" as const
+        dehydrationStatus: "dehydrating" as const
       } : q
     ));
 
-    // Complete rehydration after 3 seconds
+    // Complete dehydration after 3 seconds
     setTimeout(() => {
       setQueries(prev => prev.map(q => 
         q.id === selectedQuery.id ? {
           ...q,
-          rehydrationStatus: "completed" as const,
-          rehydrationDestination: destination.type
+          dehydrationStatus: "completed" as const,
+          dehydrationDestination: destination.type
         } : q
       ));
     }, 3000);
@@ -271,18 +271,11 @@ export default function DehydratedLogs() {
           <div className="px-6 py-4">
             <div className="flex items-center justify-between max-w-7xl mx-auto">
               <div className="flex items-center gap-3">
-                <Database className="h-8 w-8 text-brand-primary" />
                 <div>
                   <h1 className="text-2xl font-bold text-slate-900">Dehydrated Logs</h1>
                   <p className="text-slate-600 mt-1">Query and retrieve filtered logs from cold storage (AWS S3)</p>
                 </div>
               </div>
-              <Button 
-                className="bg-brand-primary text-white hover:bg-brand-dark"
-                onClick={() => setIsModalOpen(true)}
-              >
-                + New Query
-              </Button>
             </div>
           </div>
         </header>
@@ -316,96 +309,108 @@ export default function DehydratedLogs() {
             </div>
             
             {/* Query History Section */}
-            <div className="bg-white rounded-xl border border-slate-200">
-              <div className="p-6 border-b border-slate-200">
-                <div className="flex items-center gap-2 mb-4">
-                  <Search className="h-5 w-5 text-slate-500" />
-                  <h2 className="text-lg font-semibold text-slate-900">Query History</h2>
-                </div>
+            <div className="relative">
+              {/* Button positioned above table component */}
+              <div className="flex justify-end mb-4">
+                <Button 
+                  className="bg-brand-primary text-white hover:bg-brand-dark"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  + New Query
+                </Button>
               </div>
               
-              {/* Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-slate-50 border-b border-slate-200">
-                    <tr>
-                      <th className="text-left py-3 px-6 text-sm font-medium text-slate-700">Status</th>
-                      <th className="text-left py-3 px-6 text-sm font-medium text-slate-700">Query Name</th>
-                      <th className="text-left py-3 px-6 text-sm font-medium text-slate-700">Query</th>
-                      <th className="text-left py-3 px-6 text-sm font-medium text-slate-700">Created</th>
-                      <th className="text-left py-3 px-6 text-sm font-medium text-slate-700">Results</th>
-                      <th className="text-left py-3 px-6 text-sm font-medium text-slate-700">Rehydration</th>
-                      <th className="text-left py-3 px-6 text-sm font-medium text-slate-700">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200">
-                    {queries.map((query) => (
-                      <tr key={query.id} className="hover:bg-slate-50">
-                        <td className="py-4 px-6">
-                          <div className="flex items-center gap-2">
-                            {getStatusIcon(query.status)}
-                            <span className={`text-sm font-medium ${getStatusColors(query.status)}`}>
-                              {query.status}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6">
-                          <span className="text-sm font-medium text-slate-900">{query.queryName}</span>
-                        </td>
-                        <td className="py-4 px-6">
-                          <code className="text-sm bg-slate-100 px-2 py-1 rounded text-slate-700 font-mono">
-                            {query.query}
-                          </code>
-                        </td>
-                        <td className="py-4 px-6">
-                          <span className="text-sm text-slate-600">{query.created}</span>
-                        </td>
-                        <td className="py-4 px-6">
-                          {getResultsContent(query)}
-                        </td>
-                        <td className="py-4 px-6">
-                          {query.status === "Completed" && (
-                            <>
-                              {query.rehydrationStatus === "none" && (
-                                <span className="text-sm text-slate-500">—</span>
-                              )}
-                              {query.rehydrationStatus === "rehydrating" && (
-                                <div className="flex items-center gap-2">
-                                  <Loader className="h-4 w-4 animate-spin text-blue-600" />
-                                  <span className="text-sm text-blue-700">Rehydrating...</span>
-                                </div>
-                              )}
-                              {query.rehydrationStatus === "completed" && (
-                                <span className="inline-flex items-center px-2 py-1 bg-green-50 text-green-700 text-xs font-medium rounded border border-green-200">
-                                  {query.rehydrationDestination}
-                                </span>
-                              )}
-                            </>
-                          )}
-                          {query.status !== "Completed" && (
-                            <span className="text-sm text-slate-400">—</span>
-                          )}
-                        </td>
-                        <td className="py-4 px-6">
-                          {query.status === "Completed" ? (
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-brand-primary hover:text-brand-dark"
-                              onClick={() => handleViewResults(query)}
-                            >
-                              View Results
-                            </Button>
-                          ) : (
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </td>
+              <div className="bg-white rounded-xl border border-slate-200">
+                <div className="p-6 border-b border-slate-200">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Search className="h-5 w-5 text-slate-500" />
+                    <h2 className="text-lg font-semibold text-slate-900">Query History</h2>
+                  </div>
+                </div>
+                
+                {/* Table */}
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-slate-50 border-b border-slate-200">
+                      <tr>
+                        <th className="text-left py-3 px-6 text-sm font-medium text-slate-700">Status</th>
+                        <th className="text-left py-3 px-6 text-sm font-medium text-slate-700">Query Name</th>
+                        <th className="text-left py-3 px-6 text-sm font-medium text-slate-700">Query</th>
+                        <th className="text-left py-3 px-6 text-sm font-medium text-slate-700">Created</th>
+                        <th className="text-left py-3 px-6 text-sm font-medium text-slate-700">Results</th>
+                        <th className="text-left py-3 px-6 text-sm font-medium text-slate-700">Dehydration</th>
+                        <th className="text-left py-3 px-6 text-sm font-medium text-slate-700">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200">
+                      {queries.map((query) => (
+                        <tr key={query.id} className="hover:bg-slate-50">
+                          <td className="py-4 px-6">
+                            <div className="flex items-center gap-2">
+                              {getStatusIcon(query.status)}
+                              <span className={`text-sm font-medium ${getStatusColors(query.status)}`}>
+                                {query.status}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-6">
+                            <span className="text-sm font-medium text-slate-900">{query.queryName}</span>
+                          </td>
+                          <td className="py-4 px-6">
+                            <code className="text-sm bg-slate-100 px-2 py-1 rounded text-slate-700 font-mono">
+                              {query.query}
+                            </code>
+                          </td>
+                          <td className="py-4 px-6">
+                            <span className="text-sm text-slate-600">{query.created}</span>
+                          </td>
+                          <td className="py-4 px-6">
+                            {getResultsContent(query)}
+                          </td>
+                          <td className="py-4 px-6">
+                            {query.status === "Completed" && (
+                              <>
+                                {query.dehydrationStatus === "none" && (
+                                  <span className="text-sm text-slate-500">—</span>
+                                )}
+                                {query.dehydrationStatus === "dehydrating" && (
+                                  <div className="flex items-center gap-2">
+                                    <Loader className="h-4 w-4 animate-spin text-blue-600" />
+                                    <span className="text-sm text-blue-700">Dehydrating...</span>
+                                  </div>
+                                )}
+                                {query.dehydrationStatus === "completed" && (
+                                  <span className="inline-flex items-center px-2 py-1 bg-green-50 text-green-700 text-xs font-medium rounded border border-green-200">
+                                    {query.dehydrationDestination}
+                                  </span>
+                                )}
+                              </>
+                            )}
+                            {query.status !== "Completed" && (
+                              <span className="text-sm text-slate-400">—</span>
+                            )}
+                          </td>
+                          <td className="py-4 px-6">
+                            {query.status === "Completed" ? (
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="text-brand-primary hover:text-brand-dark"
+                                onClick={() => handleViewResults(query)}
+                              >
+                                View Results
+                              </Button>
+                            ) : (
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -680,12 +685,12 @@ export default function DehydratedLogs() {
                     </Button>
                   </div>
 
-                  {/* Rehydrate to Destination */}
+                  {/* Dehydrate to Destination */}
                   <div className="flex items-start justify-between p-4 border border-slate-200 rounded-lg">
                     <div className="flex items-center gap-3">
                       <RefreshCw className="h-5 w-5 text-green-600" />
                       <div>
-                        <p className="font-medium text-slate-900">Rehydrate to Destination</p>
+                        <p className="font-medium text-slate-900">Dehydrate to Destination</p>
                         <p className="text-sm text-slate-600">Send logs back to a live SIEM for analysis</p>
                       </div>
                     </div>
@@ -703,11 +708,11 @@ export default function DehydratedLogs() {
                         ))}
                       </select>
                       <Button 
-                        onClick={handleRehydrate}
+                        onClick={handleDehydrate}
                         disabled={!selectedDestination}
                         className="bg-green-600 text-white hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-sm px-3 py-1"
                       >
-                        Rehydrate
+                        Dehydrate
                       </Button>
                     </div>
                   </div>

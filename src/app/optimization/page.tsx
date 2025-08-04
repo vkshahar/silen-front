@@ -48,121 +48,172 @@ export default function OptimizationInitiatives() {
       buttonText: "Apply"
     },
     {
-      id: "logs-to-metric",
-      title: "Turn logs into a metric",
-      source: "All Log Sources",
-      volume: "1.2TB",
-      period: "Annual reduction",
-      description: "Convert logs with numerical patterns (response_time) into a metric. This reduces log volume by 80% while maintaining operational insight.",
-      reduction: "80% reduction",
-      eventCount: "1.2m events",
-      savings: "$2,845/month",
+      id: "firewall-heartbeat",
+      title: "Filter Firewall Heartbeat Events",
+      source: "Firewall Logs",
+      volume: "8.2GB",
+      period: "Daily reduction",
+      description: "Remove routine 'status OK' heartbeat events from firewall logs that provide no security value",
+      reduction: "40% reduction",
+      eventCount: "45.2k events",
+      savings: "$89/month",
       risk: "Low risk",
       sample: {
-        line1: "INFO request_id=abc123 endpoint=/api/v1/orders",
-        line2: "status_code=200 response_time_ms=120"
+        line1: "INFO 2025-01-07T12:00:00Z src=firewall-01",
+        line2: "message=\"Heartbeat status OK\" interval=60s"
       },
       buttonText: "Apply"
     },
     {
-      id: "smart-compression",
-      title: "Smart Compression",
-      source: "Linux Syslogs",
-      volume: "3.8TB",
-      period: "Annual reduction",
-      description: "Advanced algorithm optimizing compression based on log patterns and access frequency across all log sources.",
-      reduction: "65% reduction",
-      eventCount: "2.4m events",
-      savings: "$3,247/month",
-      risk: "Low risk",
-      sample: {
-        line1: "INFO src=192.168.1.100 dst=10.0.0.5",
-        line2: "protocol=TCP port=443 bytes_sent=1024"
-      },
-      buttonText: "Apply"
-    },
-    {
-      id: "log-retention-policy",
-      title: "Log Retention Policy",
-      source: "Application Logs",
-      volume: "2.1TB",
-      period: "Annual reduction",
-      description: "Implement intelligent retention policies that automatically archive old logs while preserving critical data for compliance.",
-      reduction: "45% reduction",
-      eventCount: "850k events",
-      savings: "$1,892/month",
-      risk: "Medium risk",
-      sample: {
-        line1: "INFO 2025-01-07T12:00:00Z user_id=456",
-        line2: "action=login status=success retention=90d"
-      },
-      buttonText: "Apply"
-    },
-    {
-      id: "error-log-aggregation",
-      title: "Error Log Aggregation",
-      source: "Error Logs",
-      volume: "850GB",
-      period: "Annual reduction",
-      description: "Consolidate repetitive error messages into aggregated alerts while maintaining visibility into critical issues.",
-      reduction: "70% reduction",
-      eventCount: "320k events",
-      savings: "$1,156/month",
-      risk: "Medium risk",
-      sample: {
-        line1: "ERROR 2025-01-07T12:00:00Z code=500",
-        line2: "message=\"Database connection timeout\" count=127"
-      },
-      buttonText: "Apply"
-    },
-    {
-      id: "performance-log-sampling",
-      title: "Performance Log Sampling",
-      source: "Performance Logs",
-      volume: "1.5TB",
-      period: "Annual reduction",
-      description: "Implement intelligent sampling for performance metrics, capturing representative data while reducing volume by 60%.",
-      reduction: "60% reduction",
-      eventCount: "1.8m events",
-      savings: "$2,134/month",
-      risk: "Low risk",
-      sample: {
-        line1: "PERF 2025-01-07T12:00:00Z endpoint=/api/users",
-        line2: "response_time=45ms memory_usage=128MB sample_rate=0.1"
-      },
-      buttonText: "Apply"
-    },
-    {
-      id: "data-masking",
-      title: "Sensitive Data Masking",
-      source: "Security Logs",
-      volume: "2.8TB",
-      period: "Annual reduction",
-      description: "Automatically mask or redact sensitive information while maintaining log structure for analysis and compliance requirements.",
+      id: "system-heartbeat",
+      title: "Filter System Heartbeats",
+      source: "Linux System Logs",
+      volume: "12.5GB",
+      period: "Daily reduction",
+      description: "Remove routine system heartbeat messages from Linux logs that create noise without security value",
       reduction: "35% reduction",
-      eventCount: "650k events",
-      savings: "$1,589/month",
-      risk: "High risk",
+      eventCount: "67.8k events",
+      savings: "$134/month",
+      risk: "Low risk",
       sample: {
-        line1: "INFO user=john.doe@company.com action=login",
-        line2: "ip=192.168.1.100 session_id=abc123def456"
+        line1: "INFO 2025-01-07T12:00:00Z service=systemd",
+        line2: "message=\"Service heartbeat\" status=active"
       },
       buttonText: "Apply"
     },
     {
-      id: "schema-normalization",
-      title: "Log Schema Normalization",
-      source: "Mixed Sources",
-      volume: "4.2TB",
-      period: "Annual reduction",
-      description: "Standardize log formats across different systems to reduce redundancy and improve compression efficiency.",
+      id: "chrome-updater",
+      title: "Filter Chrome Updater Events",
+      source: "Application Logs",
+      volume: "6.8GB",
+      period: "Daily reduction",
+      description: "Remove Chrome updater background events that generate high volume with no security relevance",
       reduction: "50% reduction",
-      eventCount: "3.1m events",
-      savings: "$2,987/month",
-      risk: "High risk",
+      eventCount: "23.4k events",
+      savings: "$78/month",
+      risk: "Low risk",
       sample: {
-        line1: "NORM 2025-01-07T12:00:00Z src=webserver",
-        line2: "event=request method=GET path=/api/health"
+        line1: "INFO 2025-01-07T12:00:00Z app=chrome",
+        line2: "message=\"Updater check completed\" version=120.0.6099.109"
+      },
+      buttonText: "Apply"
+    },
+    {
+      id: "link-local-traffic",
+      title: "Filter Link-Local Traffic",
+      source: "Network Logs",
+      volume: "9.3GB",
+      period: "Daily reduction",
+      description: "Exclude link-local traffic (169.254.* or fe80::/10 addresses) from network logs",
+      reduction: "30% reduction",
+      eventCount: "38.9k events",
+      savings: "$92/month",
+      risk: "Low risk",
+      sample: {
+        line1: "INFO 2025-01-07T12:00:00Z src=169.254.1.100",
+        line2: "dst=169.254.1.101 protocol=UDP port=5353"
+      },
+      buttonText: "Apply"
+    },
+    {
+      id: "google-dns",
+      title: "Filter Google DNS Requests",
+      source: "DNS Logs",
+      volume: "4.7GB",
+      period: "Daily reduction",
+      description: "Remove routine Google DNS (8.8.8.8, 8.8.4.4) requests that generate high volume",
+      reduction: "45% reduction",
+      eventCount: "156.7k events",
+      savings: "$67/month",
+      risk: "Low risk",
+      sample: {
+        line1: "INFO 2025-01-07T12:00:00Z src=192.168.1.100",
+        line2: "dst=8.8.8.8 query=example.com type=A"
+      },
+      buttonText: "Apply"
+    },
+    {
+      id: "outlook-events",
+      title: "Filter Outlook Execution Events",
+      source: "Application Logs",
+      volume: "11.2GB",
+      period: "Daily reduction",
+      description: "Remove routine Outlook execution events that provide no security or operational value",
+      reduction: "55% reduction",
+      eventCount: "42.1k events",
+      savings: "$118/month",
+      risk: "Low risk",
+      sample: {
+        line1: "INFO 2025-01-07T12:00:00Z app=outlook",
+        line2: "message=\"Process started\" pid=12345 user=john.doe"
+      },
+      buttonText: "Apply"
+    },
+    {
+      id: "auth-success",
+      title: "Filter Successful Authentication Logs",
+      source: "Authentication Logs",
+      volume: "18.6GB",
+      period: "Daily reduction",
+      description: "Remove routine successful authentication events while preserving failed login attempts",
+      reduction: "60% reduction",
+      eventCount: "89.3k events",
+      savings: "$198/month",
+      risk: "Low risk",
+      sample: {
+        line1: "INFO 2025-01-07T12:00:00Z user=john.doe",
+        line2: "action=login status=success ip=192.168.1.100"
+      },
+      buttonText: "Apply"
+    },
+    {
+      id: "allowed-traffic",
+      title: "Drop Allowed Traffic Logs",
+      source: "Firewall Logs",
+      volume: "22.4GB",
+      period: "Daily reduction",
+      description: "Exclude routine allowed traffic from firewall logs while preserving blocked/denied events",
+      reduction: "70% reduction",
+      eventCount: "234.7k events",
+      savings: "$245/month",
+      risk: "Low risk",
+      sample: {
+        line1: "INFO 2025-01-07T12:00:00Z src=192.168.1.100",
+        line2: "dst=10.0.0.5 action=allow protocol=TCP port=443"
+      },
+      buttonText: "Apply"
+    },
+    {
+      id: "cloudfront-200",
+      title: "Filter 200 OK Responses",
+      source: "AWS CloudFront Logs",
+      volume: "31.8GB",
+      period: "Daily reduction",
+      description: "Remove successful HTTP 200 responses from AWS CloudFront logs while preserving error responses",
+      reduction: "65% reduction",
+      eventCount: "567.2k events",
+      savings: "$298/month",
+      risk: "Medium risk",
+      sample: {
+        line1: "INFO 2025-01-07T12:00:00Z status=200",
+        line2: "method=GET path=/api/health response_time=45ms"
+      },
+      buttonText: "Apply"
+    },
+    {
+      id: "entra-info",
+      title: "Suppress Info Level Logs",
+      source: "Entra ID Audit Logs",
+      volume: "14.3GB",
+      period: "Daily reduction",
+      description: "Filter out informational level logs from Entra ID audit logs while preserving warning and error events",
+      reduction: "50% reduction",
+      eventCount: "78.9k events",
+      savings: "$156/month",
+      risk: "Low risk",
+      sample: {
+        line1: "INFO 2025-01-07T12:00:00Z tenant=contoso",
+        line2: "message=\"User session created\" level=info"
       },
       buttonText: "Apply"
     }
