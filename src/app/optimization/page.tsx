@@ -3,7 +3,7 @@
 import { Sidebar } from "@/components/ui/sidebar";
 import { MetricCard } from "@/components/ui/metric-card";
 import { QuickActionsDropdown } from "@/components/ui/dropdown-menu-demo";
-import { Target, TrendingUp, Zap, Shield, Database, BarChart3, AlertCircle, Search, Activity } from "lucide-react";
+import { Target, TrendingUp, Database, BarChart3 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { SelectorChips } from "@/components/ui/selector-chips";

@@ -33,16 +33,16 @@ export const SimpleFlowChart = () => {
   const MAX_ZOOM = 2;
 
   const allSources: FlowNode[] = [
-    { id: 'windows', label: 'Windows Events', volume: '12.3 GB/day', icon: Shield, type: 'source' },
-    { id: 'linux', label: 'Linux Syslogs', volume: '10.8 GB/day', icon: Server, type: 'source' },
-    { id: 'aws', label: 'AWS CloudTrail', volume: '15.2 GB/day', icon: Cloud, type: 'source' },
-    { id: 'entra', label: 'Entra ID', volume: '8.7 GB/day', icon: Database, type: 'source' },
-    { id: 'firewall', label: 'Palo Alto FW', volume: '14.6 GB/day', icon: Shield, type: 'source' },
-    { id: 'nginx', label: 'Nginx Logs', volume: '9.2 GB/day', icon: Server, type: 'source' },
-    { id: 'docker', label: 'Docker Logs', volume: '6.8 GB/day', icon: Database, type: 'source' },
-    { id: 'apache', label: 'Apache Logs', volume: '11.4 GB/day', icon: Server, type: 'source' },
-    { id: 'kubernetes', label: 'Kubernetes', volume: '18.9 GB/day', icon: Cloud, type: 'source' },
-    { id: 'mysql', label: 'MySQL Logs', volume: '5.3 GB/day', icon: Database, type: 'source' }
+    { id: 'windows', label: 'Microsoft Windows Event Logs', volume: '12.3 GB/day', icon: Shield, type: 'source' },
+    { id: 'linux', label: 'Red Hat Enterprise Linux Syslogs', volume: '10.8 GB/day', icon: Server, type: 'source' },
+    { id: 'aws', label: 'Amazon Web Services CloudTrail', volume: '15.2 GB/day', icon: Cloud, type: 'source' },
+    { id: 'entra', label: 'Microsoft Entra ID (Azure AD)', volume: '8.7 GB/day', icon: Database, type: 'source' },
+    { id: 'firewall', label: 'Palo Alto Networks Firewall', volume: '14.6 GB/day', icon: Shield, type: 'source' },
+    { id: 'nginx', label: 'Nginx Web Server Access Logs', volume: '9.2 GB/day', icon: Server, type: 'source' },
+    { id: 'docker', label: 'Docker Container Runtime Logs', volume: '6.8 GB/day', icon: Database, type: 'source' },
+    { id: 'apache', label: 'Apache HTTP Server Access Logs', volume: '11.4 GB/day', icon: Server, type: 'source' },
+    { id: 'kubernetes', label: 'Kubernetes Cluster Event Logs', volume: '18.9 GB/day', icon: Cloud, type: 'source' },
+    { id: 'mysql', label: 'MySQL Database Server Logs', volume: '5.3 GB/day', icon: Database, type: 'source' }
   ];
 
   const visibleSources = showAllSources ? allSources : allSources.slice(0, INITIAL_SOURCES_LIMIT);
@@ -147,21 +147,21 @@ export const SimpleFlowChart = () => {
         index = visibleSources.length; // Position expand node after visible sources
       }
       
-      const totalHeight = Math.max(containerHeight - 200, (nodeList.length + (hiddenSourcesCount > 0 && !showAllSources ? 1 : 0)) * 80);
+      const totalHeight = Math.max(containerHeight - 200, (nodeList.length + (hiddenSourcesCount > 0 && !showAllSources ? 1 : 0)) * 90);
       const startY = (containerHeight - totalHeight) / 2 + 50;
       
       return {
         x: 80,
-        y: startY + (index * 80)
+        y: startY + (index * 90)
       };
     } else {
       const index = destinations.findIndex(n => n.id === nodeId);
-      const totalHeight = Math.max(containerHeight - 200, destinations.length * 80);
+      const totalHeight = Math.max(containerHeight - 200, destinations.length * 90);
       const startY = (containerHeight - totalHeight) / 2 + 50;
       
       return {
-        x: containerWidth - 200,
-        y: startY + (index * 80)
+        x: containerWidth - 220,
+        y: startY + (index * 90)
       };
     }
   };
@@ -170,10 +170,10 @@ export const SimpleFlowChart = () => {
     const sourcePos = getNodePosition(connection.source, 'source');
     const destPos = getNodePosition(connection.destination, 'destination');
     
-    const startX = sourcePos.x + 120;
-    const startY = sourcePos.y + 25;
+    const startX = sourcePos.x + 200;
+    const startY = sourcePos.y + 30;
     const endX = destPos.x;
-    const endY = destPos.y + 25;
+    const endY = destPos.y + 30;
     
     const isHighlighted = hoveredNode === connection.source || hoveredNode === connection.destination;
     
@@ -213,8 +213,8 @@ export const SimpleFlowChart = () => {
         style={{
           left: position.x,
           top: position.y,
-          width: 120,
-          height: 50
+          width: 200,
+          height: 60
         }}
         onMouseEnter={() => setHoveredNode('expand')}
         onMouseLeave={() => setHoveredNode(null)}
@@ -266,8 +266,8 @@ export const SimpleFlowChart = () => {
         style={{
           left: position.x,
           top: position.y,
-          width: 120,
-          height: 50
+          width: 200,
+          height: 60
         }}
         onMouseEnter={() => setHoveredNode(node.id)}
         onMouseLeave={() => setHoveredNode(null)}
@@ -303,7 +303,7 @@ export const SimpleFlowChart = () => {
           </div>
           <div className="flex-1 min-w-0">
             <div className={`
-              text-xs font-medium transition-all duration-300 truncate
+              text-xs font-medium transition-all duration-300 leading-tight
               ${isHovered 
                 ? 'text-purple-900' 
                 : isConnected

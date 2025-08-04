@@ -19,36 +19,36 @@ import {
 } from "@/components/ui/area-charts-2"
 
 const chartData = [
-  { date: "2024-04-01", ingress: 300, egress: 200 },
-  { date: "2024-04-02", ingress: 280, egress: 220 },
-  { date: "2024-04-03", ingress: 350, egress: 180 },
-  { date: "2024-04-04", ingress: 400, egress: 250 },
-  { date: "2024-04-05", ingress: 380, egress: 300 },
-  { date: "2024-04-06", ingress: 450, egress: 280 },
-  { date: "2024-04-07", ingress: 420, egress: 320 },
-  { date: "2024-04-08", ingress: 500, egress: 350 },
-  { date: "2024-04-09", ingress: 480, egress: 380 },
-  { date: "2024-04-10", ingress: 520, egress: 400 },
-  { date: "2024-04-11", ingress: 490, egress: 420 },
-  { date: "2024-04-12", ingress: 550, egress: 450 },
-  { date: "2024-04-13", ingress: 530, egress: 470 },
-  { date: "2024-04-14", ingress: 580, egress: 500 },
-  { date: "2024-04-15", ingress: 560, egress: 520 },
-  { date: "2024-04-16", ingress: 600, egress: 540 },
-  { date: "2024-04-17", ingress: 590, egress: 560 },
-  { date: "2024-04-18", ingress: 620, egress: 580 },
-  { date: "2024-04-19", ingress: 610, egress: 600 },
-  { date: "2024-04-20", ingress: 650, egress: 620 },
-  { date: "2024-04-21", ingress: 640, egress: 640 },
-  { date: "2024-04-22", ingress: 680, egress: 660 },
-  { date: "2024-04-23", ingress: 670, egress: 680 },
-  { date: "2024-04-24", ingress: 700, egress: 700 },
-  { date: "2024-04-25", ingress: 690, egress: 720 },
-  { date: "2024-04-26", ingress: 720, egress: 740 },
-  { date: "2024-04-27", ingress: 710, egress: 760 },
-  { date: "2024-04-28", ingress: 740, egress: 780 },
-  { date: "2024-04-29", ingress: 730, egress: 800 },
-  { date: "2024-04-30", ingress: 750, egress: 820 },
+  { date: "2024-04-01", ingress: 1200, egress: 728 },
+  { date: "2024-04-02", ingress: 1150, egress: 697 },
+  { date: "2024-04-03", ingress: 1320, egress: 800 },
+  { date: "2024-04-04", ingress: 1450, egress: 879 },
+  { date: "2024-04-05", ingress: 1380, egress: 836 },
+  { date: "2024-04-06", ingress: 1580, egress: 958 }, // Weekend spike
+  { date: "2024-04-07", ingress: 1520, egress: 921 }, // Weekend spike
+  { date: "2024-04-08", ingress: 1280, egress: 776 },
+  { date: "2024-04-09", ingress: 1340, egress: 812 },
+  { date: "2024-04-10", ingress: 1420, egress: 861 },
+  { date: "2024-04-11", ingress: 1380, egress: 836 },
+  { date: "2024-04-12", ingress: 1460, egress: 885 },
+  { date: "2024-04-13", ingress: 1650, egress: 1000 }, // Weekend spike
+  { date: "2024-04-14", ingress: 1720, egress: 1043 }, // Weekend spike
+  { date: "2024-04-15", ingress: 1390, egress: 842 },
+  { date: "2024-04-16", ingress: 1430, egress: 867 },
+  { date: "2024-04-17", ingress: 1520, egress: 921 },
+  { date: "2024-04-18", ingress: 1480, egress: 897 },
+  { date: "2024-04-19", ingress: 1560, egress: 946 },
+  { date: "2024-04-20", ingress: 1820, egress: 1103 }, // Weekend spike
+  { date: "2024-04-21", ingress: 1890, egress: 1146 }, // Weekend spike
+  { date: "2024-04-22", ingress: 1450, egress: 879 },
+  { date: "2024-04-23", ingress: 1500, egress: 909 },
+  { date: "2024-04-24", ingress: 1380, egress: 836 },
+  { date: "2024-04-25", ingress: 1420, egress: 861 },
+  { date: "2024-04-26", ingress: 1480, egress: 897 },
+  { date: "2024-04-27", ingress: 1750, egress: 1061 }, // Weekend spike
+  { date: "2024-04-28", ingress: 1680, egress: 1018 }, // Weekend spike
+  { date: "2024-04-29", ingress: 1320, egress: 800 },
+  { date: "2024-04-30", ingress: 1400, egress: 848 },
 ]
 
 const chartConfig = {

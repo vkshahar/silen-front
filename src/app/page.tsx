@@ -8,8 +8,7 @@ import {
   Calendar,
   ArrowDown,
   ArrowUp,
-  Target,
-  Database
+  Target
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -49,9 +48,9 @@ export default function Dashboard() {
                 icon={Calendar}
               />
               <MetricCard
-                title="Cost Savings (Annual)"
-                value="$75,426"
-                change="+18%"
+                title="Data sources"
+                value="32"
+                change="+2"
                 changeType="positive"
                 icon={Calendar}
               />

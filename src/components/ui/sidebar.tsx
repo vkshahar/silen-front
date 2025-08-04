@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { 
-  Home, 
-  User, 
+ 
   Settings, 
   LogOut, 
   Menu, 
@@ -12,8 +11,6 @@ import {
   ChevronRight,
   BarChart3,
   FileText,
-  Bell,
-  HelpCircle,
   Activity,
   Target,
   Archive
