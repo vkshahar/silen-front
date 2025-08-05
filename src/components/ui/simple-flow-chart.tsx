@@ -37,12 +37,31 @@ export const SimpleFlowChart = () => {
     { id: 'linux', label: 'Red Hat Enterprise Linux Syslogs', volume: '10.8 GB/day', icon: Server, type: 'source' },
     { id: 'aws', label: 'Amazon Web Services CloudTrail', volume: '15.2 GB/day', icon: Cloud, type: 'source' },
     { id: 'entra', label: 'Microsoft Entra ID (Azure AD)', volume: '8.7 GB/day', icon: Database, type: 'source' },
+    // Hidden sources that appear when expanded
     { id: 'firewall', label: 'Palo Alto Networks Firewall', volume: '14.6 GB/day', icon: Shield, type: 'source' },
     { id: 'nginx', label: 'Nginx Web Server Access Logs', volume: '9.2 GB/day', icon: Server, type: 'source' },
     { id: 'docker', label: 'Docker Container Runtime Logs', volume: '6.8 GB/day', icon: Database, type: 'source' },
     { id: 'apache', label: 'Apache HTTP Server Access Logs', volume: '11.4 GB/day', icon: Server, type: 'source' },
     { id: 'kubernetes', label: 'Kubernetes Cluster Event Logs', volume: '18.9 GB/day', icon: Cloud, type: 'source' },
-    { id: 'mysql', label: 'MySQL Database Server Logs', volume: '5.3 GB/day', icon: Database, type: 'source' }
+    { id: 'mysql', label: 'MySQL Database Server Logs', volume: '5.3 GB/day', icon: Database, type: 'source' },
+    { id: 'postgresql', label: 'PostgreSQL Database Logs', volume: '4.7 GB/day', icon: Database, type: 'source' },
+    { id: 'redis', label: 'Redis Cache Server Logs', volume: '3.2 GB/day', icon: Database, type: 'source' },
+    { id: 'jenkins', label: 'Jenkins CI/CD Pipeline Logs', volume: '7.8 GB/day', icon: Server, type: 'source' },
+    { id: 'gitlab', label: 'GitLab Application Logs', volume: '6.1 GB/day', icon: Cloud, type: 'source' },
+    { id: 'elasticsearch', label: 'Elasticsearch Cluster Logs', volume: '13.4 GB/day', icon: Database, type: 'source' },
+    { id: 'mongodb', label: 'MongoDB Database Logs', volume: '8.9 GB/day', icon: Database, type: 'source' },
+    { id: 'tomcat', label: 'Apache Tomcat Application Server', volume: '9.7 GB/day', icon: Server, type: 'source' },
+    { id: 'iis', label: 'Microsoft IIS Web Server', volume: '11.2 GB/day', icon: Server, type: 'source' },
+    { id: 'rabbitmq', label: 'RabbitMQ Message Broker', volume: '4.5 GB/day', icon: Cloud, type: 'source' },
+    { id: 'kafka', label: 'Apache Kafka Streaming Logs', volume: '16.3 GB/day', icon: Cloud, type: 'source' },
+    { id: 'haproxy', label: 'HAProxy Load Balancer', volume: '7.6 GB/day', icon: Server, type: 'source' },
+    { id: 'vsphere', label: 'VMware vSphere Infrastructure', volume: '12.8 GB/day', icon: Cloud, type: 'source' },
+    { id: 'office365', label: 'Microsoft Office 365 Logs', volume: '14.1 GB/day', icon: Cloud, type: 'source' },
+    { id: 'salesforce', label: 'Salesforce Platform Logs', volume: '6.4 GB/day', icon: Cloud, type: 'source' },
+    { id: 'okta', label: 'Okta Identity Management', volume: '5.8 GB/day', icon: Shield, type: 'source' },
+    { id: 'crowdstrike', label: 'CrowdStrike Endpoint Protection', volume: '9.3 GB/day', icon: Shield, type: 'source' },
+    { id: 'fortinet', label: 'Fortinet FortiGate Firewall', volume: '13.7 GB/day', icon: Shield, type: 'source' },
+    { id: 'checkpoint', label: 'Check Point Security Gateway', volume: '10.5 GB/day', icon: Shield, type: 'source' }
   ];
 
   const visibleSources = showAllSources ? allSources : allSources.slice(0, INITIAL_SOURCES_LIMIT);
@@ -56,6 +75,7 @@ export const SimpleFlowChart = () => {
   ];
 
   const allConnections: FlowConnection[] = [
+    // Initial visible sources
     { source: 'windows', destination: 'splunk' },
     { source: 'windows', destination: 'sentinel' },
     { source: 'linux', destination: 'datadog' },
@@ -65,6 +85,7 @@ export const SimpleFlowChart = () => {
     { source: 'aws', destination: 'sentinel' },
     { source: 'entra', destination: 'sentinel' },
     { source: 'entra', destination: 'elastic' },
+    // Expanded sources connections
     { source: 'firewall', destination: 'splunk' },
     { source: 'firewall', destination: 'elastic' },
     { source: 'nginx', destination: 'datadog' },
@@ -72,7 +93,33 @@ export const SimpleFlowChart = () => {
     { source: 'apache', destination: 'splunk' },
     { source: 'kubernetes', destination: 'datadog' },
     { source: 'kubernetes', destination: 'elastic' },
-    { source: 'mysql', destination: 'splunk' }
+    { source: 'mysql', destination: 'splunk' },
+    { source: 'postgresql', destination: 'datadog' },
+    { source: 'postgresql', destination: 'elastic' },
+    { source: 'redis', destination: 'elastic' },
+    { source: 'jenkins', destination: 'splunk' },
+    { source: 'jenkins', destination: 'datadog' },
+    { source: 'gitlab', destination: 'datadog' },
+    { source: 'elasticsearch', destination: 'elastic' },
+    { source: 'mongodb', destination: 'splunk' },
+    { source: 'mongodb', destination: 'datadog' },
+    { source: 'tomcat', destination: 'splunk' },
+    { source: 'iis', destination: 'sentinel' },
+    { source: 'rabbitmq', destination: 'datadog' },
+    { source: 'kafka', destination: 'elastic' },
+    { source: 'kafka', destination: 'splunk' },
+    { source: 'haproxy', destination: 'datadog' },
+    { source: 'vsphere', destination: 'splunk' },
+    { source: 'vsphere', destination: 'sentinel' },
+    { source: 'office365', destination: 'sentinel' },
+    { source: 'salesforce', destination: 'splunk' },
+    { source: 'okta', destination: 'sentinel' },
+    { source: 'crowdstrike', destination: 'splunk' },
+    { source: 'crowdstrike', destination: 'sentinel' },
+    { source: 'fortinet', destination: 'splunk' },
+    { source: 'fortinet', destination: 'elastic' },
+    { source: 'checkpoint', destination: 'splunk' },
+    { source: 'checkpoint', destination: 'sentinel' }
   ];
 
   const visibleConnections = showAllSources 
@@ -147,21 +194,29 @@ export const SimpleFlowChart = () => {
         index = visibleSources.length; // Position expand node after visible sources
       }
       
-      const totalHeight = Math.max(containerHeight - 200, (nodeList.length + (hiddenSourcesCount > 0 && !showAllSources ? 1 : 0)) * 90);
-      const startY = (containerHeight - totalHeight) / 2 + 50;
+      // Calculate spacing to fit all nodes properly
+      const totalNodes = nodeList.length + (hiddenSourcesCount > 0 && !showAllSources ? 1 : 0);
+      const availableHeight = containerHeight - 100; // Leave margins
+      const nodeSpacing = Math.min(90, Math.max(50, availableHeight / totalNodes));
+      const totalUsedHeight = totalNodes * nodeSpacing;
+      const startY = Math.max(20, (containerHeight - totalUsedHeight) / 2);
       
       return {
         x: 80,
-        y: startY + (index * 90)
+        y: startY + (index * nodeSpacing)
       };
     } else {
       const index = destinations.findIndex(n => n.id === nodeId);
-      const totalHeight = Math.max(containerHeight - 200, destinations.length * 90);
-      const startY = (containerHeight - totalHeight) / 2 + 50;
+      
+      // Calculate spacing for destinations to distribute evenly
+      const availableHeight = containerHeight - 100; // Leave margins
+      const nodeSpacing = Math.min(90, Math.max(50, availableHeight / destinations.length));
+      const totalUsedHeight = destinations.length * nodeSpacing;
+      const startY = Math.max(20, (containerHeight - totalUsedHeight) / 2);
       
       return {
         x: containerWidth - 220,
-        y: startY + (index * 90)
+        y: startY + (index * nodeSpacing)
       };
     }
   };

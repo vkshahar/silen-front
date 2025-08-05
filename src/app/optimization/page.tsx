@@ -42,7 +42,7 @@ export default function OptimizationInitiatives() {
       description: "Filter out verbose debug logging from Windows Event logs to reduce noise and storage costs",
       reduction: "25% reduction",
       eventCount: "9.8k events",
-      savings: "$161/month",
+      savings: "$2,250/month",
       risk: "Low risk",
       sample: {
         line1: "Event ID: 1001 | Source: Microsoft-Windows-Winlogon",
@@ -59,7 +59,7 @@ export default function OptimizationInitiatives() {
       description: "Remove routine 'status OK' heartbeat events from firewall logs that provide no security value",
       reduction: "40% reduction",
       eventCount: "45.2k events",
-      savings: "$89/month",
+      savings: "$1,230/month",
       risk: "Low risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z src=firewall-01",
@@ -76,7 +76,7 @@ export default function OptimizationInitiatives() {
       description: "Remove routine system heartbeat messages from Linux logs that create noise without security value",
       reduction: "35% reduction",
       eventCount: "67.8k events",
-      savings: "$134/month",
+      savings: "$1,875/month",
       risk: "Low risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z service=systemd",
@@ -93,7 +93,7 @@ export default function OptimizationInitiatives() {
       description: "Remove Chrome updater background events that generate high volume with no security relevance",
       reduction: "50% reduction",
       eventCount: "23.4k events",
-      savings: "$78/month",
+      savings: "$1,020/month",
       risk: "Low risk",
       sample: {
         line1: "Event ID: 4688 | Source: Microsoft-Windows-Security-Auditing",
@@ -110,7 +110,7 @@ export default function OptimizationInitiatives() {
       description: "Exclude link-local traffic (169.254.* or fe80::/10 addresses) from network logs",
       reduction: "30% reduction",
       eventCount: "38.9k events",
-      savings: "$92/month",
+      savings: "$1,395/month",
       risk: "Low risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z src=169.254.1.100",
@@ -127,7 +127,7 @@ export default function OptimizationInitiatives() {
       description: "Remove routine Google DNS (8.8.8.8, 8.8.4.4) requests that generate high volume",
       reduction: "45% reduction",
       eventCount: "156.7k events",
-      savings: "$67/month",
+      savings: "$705/month",
       risk: "Low risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z src=192.168.1.100",
@@ -144,7 +144,7 @@ export default function OptimizationInitiatives() {
       description: "Remove routine Outlook execution events that provide no security or operational value",
       reduction: "55% reduction",
       eventCount: "42.1k events",
-      savings: "$118/month",
+      savings: "$1,680/month",
       risk: "Low risk",
       sample: {
         line1: "Event ID: 1 | Source: Microsoft-Windows-Sysmon",
@@ -161,7 +161,7 @@ export default function OptimizationInitiatives() {
       description: "Remove routine successful authentication events while preserving failed login attempts",
       reduction: "60% reduction",
       eventCount: "89.3k events",
-      savings: "$198/month",
+      savings: "$2,790/month",
       risk: "Low risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z user=john.doe",
@@ -178,7 +178,7 @@ export default function OptimizationInitiatives() {
       description: "Exclude routine allowed traffic from firewall logs while preserving blocked/denied events",
       reduction: "70% reduction",
       eventCount: "234.7k events",
-      savings: "$245/month",
+      savings: "$3,360/month",
       risk: "Low risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z src=192.168.1.100",
@@ -195,7 +195,7 @@ export default function OptimizationInitiatives() {
       description: "Remove successful HTTP 200 responses from AWS CloudFront logs while preserving error responses",
       reduction: "65% reduction",
       eventCount: "567.2k events",
-      savings: "$298/month",
+      savings: "$4,770/month",
       risk: "Medium risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z status=200",
@@ -212,7 +212,7 @@ export default function OptimizationInitiatives() {
       description: "Filter out informational level logs from Entra ID audit logs while preserving warning and error events",
       reduction: "50% reduction",
       eventCount: "78.9k events",
-      savings: "$156/month",
+      savings: "$2,145/month",
       risk: "Low risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z tenant=contoso",

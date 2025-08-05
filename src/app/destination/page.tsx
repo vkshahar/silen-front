@@ -1,148 +1,106 @@
 "use client";
 
 import { Sidebar } from "@/components/ui/sidebar";
-import { MoreHorizontal, CheckCircle, AlertTriangle, XCircle, Plus, Edit, Trash2 } from "lucide-react";
+import { MoreHorizontal, CheckCircle, AlertTriangle, XCircle, Plus, Edit, Trash2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { AddSourceDrawer } from "@/components/ui/add-source-drawer";
+import { AddDestinationDrawer } from "@/components/ui/add-destination-drawer";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 
-const sourceData = [
+const destinationData = [
   {
-    source: "Windows Domain Controllers",
-    dailyLogs: "45,000 logs/day",
-    type: "Windows Event Logs",
-    dailyVolume: "45,000 logs",
-    sizeBeforeOptimization: "1350.0 GB",
-    optimizedSize: "877.5 GB",
-    reduction: "-35%",
-    monthlySavings: "$70,875",
+    name: "Splunk Production",
+    type: "Splunk",
     status: "active",
-    errors: null
+    costPerGB: "$5",
+    ipAddress: "192.168.1.100",
+    apiKey: "****-****-****",
+    lastSync: "1/15/2024"
   },
   {
-    source: "Linux Web Servers",
-    dailyLogs: "32,000 logs/day",
-    type: "Linux Syslogs",
-    dailyVolume: "32,000 logs",
-    sizeBeforeOptimization: "960.0 GB",
-    optimizedSize: "624.0 GB",
-    reduction: "-35%",
-    monthlySavings: "$50,400",
+    name: "QRadar Secondary",
+    type: "QRadar",
     status: "active",
-    errors: "2 errors"
+    costPerGB: "$4.5",
+    ipAddress: "192.168.1.101",
+    apiKey: "****-****-****",
+    lastSync: "1/15/2024"
   },
   {
-    source: "Cisco Network Switches",
-    dailyLogs: "15,000 logs/day",
-    type: "Network Devices",
-    dailyVolume: "15,000 logs",
-    sizeBeforeOptimization: "450.0 GB",
-    optimizedSize: "292.5 GB",
-    reduction: "-35%",
-    monthlySavings: "$23,625",
-    status: "error",
-    errors: "15 errors"
-  },
-  {
-    source: "Application Servers",
-    dailyLogs: "28,000 logs/day",
-    type: "Applications",
-    dailyVolume: "28,000 logs",
-    sizeBeforeOptimization: "840.0 GB",
-    optimizedSize: "546.0 GB",
-    reduction: "-35%",
-    monthlySavings: "$44,100",
-    status: "active",
-    errors: "1 errors"
-  },
-  {
-    source: "Security Scanners",
-    dailyLogs: "8,000 logs/day",
-    type: "Security Tools",
-    dailyVolume: "8,000 logs",
-    sizeBeforeOptimization: "240.0 GB",
-    optimizedSize: "156.0 GB",
-    reduction: "-35%",
-    monthlySavings: "$12,600",
+    name: "Sentinel Cloud",
+    type: "Sentinel",
     status: "inactive",
-    errors: null
+    costPerGB: "$6",
+    ipAddress: "sentinel.azure.com",
+    apiKey: "****-****-****",
+    lastSync: "1/10/2024"
   }
 ];
 
-export default function SourceManagement() {
+export default function DestinationManagement() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [editingSource, setEditingSource] = useState<typeof sourceData[0] | null>(null);
+  const [editingDestination, setEditingDestination] = useState<typeof destinationData[0] | null>(null);
   const [drawerMode, setDrawerMode] = useState<'add' | 'edit'>('add');
-  const [sources, setSources] = useState(sourceData);
+  const [destinations, setDestinations] = useState(destinationData);
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [sourceToDelete, setSourceToDelete] = useState<{index: number, name: string} | null>(null);
+  const [destinationToDelete, setDestinationToDelete] = useState<{index: number, name: string} | null>(null);
 
-  const handleEditSource = (source: typeof sourceData[0]) => {
-    setEditingSource(source);
+  const handleEditDestination = (destination: typeof destinationData[0]) => {
+    setEditingDestination(destination);
     setDrawerMode('edit');
     setIsDrawerOpen(true);
     setOpenDropdown(null);
   };
 
-  const handleDeleteSource = (index: number) => {
-    setSourceToDelete({ index, name: sources[index].source });
+  const handleDeleteDestination = (index: number) => {
+    setDestinationToDelete({ index, name: destinations[index].name });
     setDeleteDialogOpen(true);
     setOpenDropdown(null);
   };
 
   const confirmDelete = () => {
-    if (sourceToDelete) {
-      setSources(sources.filter((_, i) => i !== sourceToDelete.index));
+    if (destinationToDelete) {
+      setDestinations(destinations.filter((_, i) => i !== destinationToDelete.index));
     }
     setDeleteDialogOpen(false);
-    setSourceToDelete(null);
+    setDestinationToDelete(null);
   };
 
   const cancelDelete = () => {
     setDeleteDialogOpen(false);
-    setSourceToDelete(null);
+    setDestinationToDelete(null);
   };
 
-  const handleAddSource = () => {
-    setEditingSource(null);
+  const handleAddDestination = () => {
+    setEditingDestination(null);
     setDrawerMode('add');
     setIsDrawerOpen(true);
   };
 
   const handleCloseDrawer = () => {
     setIsDrawerOpen(false);
-    setEditingSource(null);
+    setEditingDestination(null);
     setOpenDropdown(null);
   };
 
-  const handleAddNewSource = (newSource: any) => {
-    // Add source with connecting status
-    setSources(prev => [...prev, newSource]);
+  const handleAddNewDestination = (newDestination: any) => {
+    // Add destination with connecting status
+    setDestinations(prev => [...prev, newDestination]);
     
     // Simulate connection process - change to active after 3 seconds
     setTimeout(() => {
-      setSources(prev => 
-        prev.map(source => 
-          source === newSource 
-            ? { 
-                ...source, 
-                status: 'active',
-                dailyLogs: "12,000 logs/day",
-                dailyVolume: "12,000 logs",
-                sizeBeforeOptimization: "360.0 GB",
-                optimizedSize: "234.0 GB",
-                reduction: "-35%",
-                monthlySavings: "$18,900"
-              }
-            : source
+      setDestinations(prev => 
+        prev.map(dest => 
+          dest === newDestination 
+            ? { ...dest, status: 'active' }
+            : dest
         )
       );
     }, 3000);
   };
 
-  const getStatusBadge = (status: string, errors?: string | null) => {
+  const getStatusBadge = (status: string) => {
     if (status === "active") {
       return (
         <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-xs font-medium rounded border border-green-200">
@@ -185,8 +143,8 @@ export default function SourceManagement() {
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">Source Management</h1>
-                <p className="text-slate-600 mt-1">Manage and monitor your log sources, volumes, and optimization metrics</p>
+                <h1 className="text-2xl font-bold text-slate-900">Destination Management</h1>
+                <p className="text-slate-600 mt-1">Manage and monitor your SIEM destinations and connections</p>
               </div>
             </div>
           </div>
@@ -196,57 +154,57 @@ export default function SourceManagement() {
         <main className="px-6 py-8">
           <div className="max-w-7xl mx-auto space-y-8">
             
-            {/* Sources Table */}
+            {/* Destinations Table */}
             <div className="relative">
               {/* Button positioned above table component */}
               <div className="flex justify-end mb-4">
                 <Button 
-                  onClick={handleAddSource}
+                  onClick={handleAddDestination}
                   className="flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
-                  Add a source
+                  Add New SIEM
                 </Button>
               </div>
               
               <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
                 <div className="px-6 py-4 border-b border-slate-200">
                   <div>
-                    <h2 className="text-lg font-semibold text-slate-900 mb-1">Log Sources Overview</h2>
-                    <p className="text-slate-600 text-sm">Daily volumes, costs, and optimization efficiency per source</p>
+                    <h2 className="text-lg font-semibold text-slate-900 mb-1">SIEM Connections</h2>
+                    <p className="text-slate-600 text-sm">Connected security information and event management systems</p>
                   </div>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-slate-50 border-b border-slate-200">
                       <tr>
-                        <th className="text-left px-6 py-3 text-sm font-semibold text-slate-900">Source</th>
+                        <th className="text-left px-6 py-3 text-sm font-semibold text-slate-900">Name</th>
                         <th className="text-left px-4 py-3 text-sm font-semibold text-slate-900">Type</th>
-                        <th className="text-left px-4 py-3 text-sm font-semibold text-slate-900">Daily Volume</th>
-                        <th className="text-left px-4 py-3 text-sm font-semibold text-slate-900">Size (GB)<br/>(Before Optimization)</th>
-                        <th className="text-left px-4 py-3 text-sm font-semibold text-slate-900">Optimized Size (GB)</th>
-                        <th className="text-left px-4 py-3 text-sm font-semibold text-slate-900">Reduction</th>
-                        <th className="text-left px-4 py-3 text-sm font-semibold text-slate-900">Monthly<br/>Savings</th>
                         <th className="text-left px-4 py-3 text-sm font-semibold text-slate-900">Status</th>
+                        <th className="text-left px-4 py-3 text-sm font-semibold text-slate-900">Cost/GB</th>
+                        <th className="text-left px-4 py-3 text-sm font-semibold text-slate-900">IP Address</th>
+                        <th className="text-left px-4 py-3 text-sm font-semibold text-slate-900">API Key</th>
+                        <th className="text-left px-4 py-3 text-sm font-semibold text-slate-900">Last Sync</th>
                         <th className="text-left px-6 py-3 text-sm font-semibold text-slate-900">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {sources.map((source, index) => (
+                      {destinations.map((destination, index) => (
                         <tr key={index} className="hover:bg-slate-50 transition-colors">
-                          <td className="px-6 py-4">
-                            <div className="space-y-1">
-                              <div className="text-sm text-slate-900 font-medium">{source.source}</div>
-                              <div className="text-xs text-slate-500">{source.dailyLogs}</div>
+                          <td className="px-6 py-4 text-sm text-slate-900 font-medium">{destination.name}</td>
+                          <td className="px-4 py-4 text-sm text-slate-700">{destination.type}</td>
+                          <td className="px-4 py-4">{getStatusBadge(destination.status)}</td>
+                          <td className="px-4 py-4 text-sm text-slate-700">{destination.costPerGB}</td>
+                          <td className="px-4 py-4 text-sm text-slate-700">{destination.ipAddress}</td>
+                          <td className="px-4 py-4">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-slate-700">{destination.apiKey}</span>
+                              <button className="p-1 text-slate-400 hover:text-slate-600 transition-colors">
+                                <Eye className="w-3 h-3" />
+                              </button>
                             </div>
                           </td>
-                          <td className="px-4 py-4 text-sm text-slate-700">{source.type}</td>
-                          <td className="px-4 py-4 text-sm text-slate-700">{source.dailyVolume}</td>
-                          <td className="px-4 py-4 text-sm text-red-600 font-medium">{source.sizeBeforeOptimization}</td>
-                          <td className="px-4 py-4 text-sm text-teal-600 font-medium">{source.optimizedSize}</td>
-                          <td className="px-4 py-4 text-sm text-green-600 font-medium">{source.reduction}</td>
-                          <td className="px-4 py-4 text-sm text-green-600 font-medium">{source.monthlySavings}</td>
-                          <td className="px-4 py-4">{getStatusBadge(source.status, source.errors)}</td>
+                          <td className="px-4 py-4 text-sm text-slate-700">{destination.lastSync}</td>
                           <td className="px-6 py-4">
                             <div className="relative">
                               <button 
@@ -263,17 +221,17 @@ export default function SourceManagement() {
                                     onClick={() => setOpenDropdown(null)}
                                   />
                                   <div className={`absolute right-0 w-32 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-20 ${
-                                    index >= sources.length - 2 ? 'bottom-8 mb-1' : 'top-8 mt-1'
+                                    index >= destinations.length - 2 ? 'bottom-8 mb-1' : 'top-8 mt-1'
                                   }`}>
                                     <button
-                                      onClick={() => handleEditSource(source)}
+                                      onClick={() => handleEditDestination(destination)}
                                       className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
                                     >
                                       <Edit className="w-3 h-3" />
                                       Edit
                                     </button>
                                     <button
-                                      onClick={() => handleDeleteSource(index)}
+                                      onClick={() => handleDeleteDestination(index)}
                                       className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                                     >
                                       <Trash2 className="w-3 h-3" />
@@ -295,13 +253,13 @@ export default function SourceManagement() {
         </main>
       </div>
       
-      {/* Add Source Drawer */}
-      <AddSourceDrawer 
+      {/* Add Destination Drawer */}
+      <AddDestinationDrawer 
         isOpen={isDrawerOpen} 
         onClose={handleCloseDrawer}
-        editData={editingSource}
+        editData={editingDestination}
         mode={drawerMode}
-        onAddSource={handleAddNewSource}
+        onAddDestination={handleAddNewDestination}
       />
       
       {/* Delete Confirmation Dialog */}
@@ -309,7 +267,8 @@ export default function SourceManagement() {
         isOpen={deleteDialogOpen}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
-        sourceName={sourceToDelete?.name || ''}
+        sourceName={destinationToDelete?.name || ''}
+        itemType="destination"
       />
     </div>
   );

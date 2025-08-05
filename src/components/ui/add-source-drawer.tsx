@@ -20,13 +20,15 @@ interface AddSourceDrawerProps {
     tags?: string[];
   } | null;
   mode?: 'add' | 'edit';
+  onAddSource?: (source: any) => void;
 }
 
 export const AddSourceDrawer: React.FC<AddSourceDrawerProps> = ({ 
   isOpen, 
   onClose, 
   editData, 
-  mode = 'add' 
+  mode = 'add',
+  onAddSource
 }) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionSuccess, setConnectionSuccess] = useState(false);
@@ -134,6 +136,18 @@ export const AddSourceDrawer: React.FC<AddSourceDrawerProps> = ({
         newTag: ""
       });
     }
+
+    // Handle body scroll prevention
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [editData, mode, isOpen]);
 
   const handleInputChange = (field: string, value: string) => {
@@ -162,19 +176,41 @@ export const AddSourceDrawer: React.FC<AddSourceDrawerProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsConnecting(true);
     
-    // Simulate connection process
-    await new Promise(resolve => setTimeout(resolve, 2500));
-    
-    setIsConnecting(false);
-    setConnectionSuccess(true);
-    
-    // Show success state briefly then close
-    setTimeout(() => {
-      setConnectionSuccess(false);
+    if (mode === 'add' && onAddSource) {
+      // Create new source with connecting status
+      const newSource = {
+        source: formData.sourceName,
+        dailyLogs: "0 logs/day",
+        type: formData.sourceType,
+        dailyVolume: "0 logs",
+        sizeBeforeOptimization: "0 GB",
+        optimizedSize: "0 GB",
+        reduction: "0%",
+        monthlySavings: "$0",
+        status: "connecting",
+        errors: null
+      };
+      
+      // Add source and close drawer immediately
+      onAddSource(newSource);
       onClose();
-    }, 1500);
+    } else {
+      // Edit mode - keep existing behavior
+      setIsConnecting(true);
+      
+      // Simulate connection process
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      
+      setIsConnecting(false);
+      setConnectionSuccess(true);
+      
+      // Show success state briefly then close
+      setTimeout(() => {
+        setConnectionSuccess(false);
+        onClose();
+      }, 1500);
+    }
   };
 
   return (
@@ -188,12 +224,12 @@ export const AddSourceDrawer: React.FC<AddSourceDrawerProps> = ({
       />
       
       {/* Drawer */}
-      <div className={`fixed right-0 top-0 h-full w-[700px] bg-white shadow-2xl z-50 transform transition-all duration-300 ease-in-out ${
+      <div className={`fixed right-0 top-0 h-full w-[700px] bg-white shadow-2xl z-50 transform transition-all duration-300 ease-in-out flex flex-col ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}>
         
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-white">
+        <div className="flex-shrink-0 flex items-center justify-between p-6 border-b border-slate-200 bg-white">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">
               {mode === 'edit' ? 'Edit Source' : 'Add New Source'}
@@ -211,7 +247,7 @@ export const AddSourceDrawer: React.FC<AddSourceDrawerProps> = ({
         </div>
 
         {/* Form Content - Scrollable */}
-        <div className="flex-1 overflow-y-auto p-6 pb-24">
+        <div className="flex-1 overflow-y-auto p-6 pb-24" style={{ maxHeight: 'calc(100vh - 140px)' }}>
           <form onSubmit={handleSubmit} className="space-y-8">
             
             {/* Basic Configuration */}
@@ -465,8 +501,7 @@ export const AddSourceDrawer: React.FC<AddSourceDrawerProps> = ({
             <div className="flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-sm text-blue-800 font-medium">Configuration Note</p>
-                <p className="text-sm text-blue-700 mt-1">
+                <p className="text-sm text-blue-700">
                   After {mode === 'edit' ? 'updating' : 'adding'} the source, it may take a few minutes to establish the connection and begin receiving logs.
                 </p>
               </div>
@@ -475,7 +510,7 @@ export const AddSourceDrawer: React.FC<AddSourceDrawerProps> = ({
         </div>
 
         {/* Fixed Footer Actions */}
-        <div className="absolute bottom-0 left-0 right-0 border-t border-slate-200 p-6 bg-white">
+        <div className="flex-shrink-0 border-t border-slate-200 p-6 bg-white">
           <div className="flex items-center justify-end gap-3">
             <Button 
               variant="outline"

@@ -42,7 +42,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 -mt-4">
               <MetricCard
                 title="Cost Savings (30 Days)"
-                value="$6,286"
+                value="$23,370"
                 change="+15%"
                 changeType="positive"
                 icon={Calendar}

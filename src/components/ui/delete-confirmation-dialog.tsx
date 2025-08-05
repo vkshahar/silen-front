@@ -9,13 +9,15 @@ interface DeleteConfirmationDialogProps {
   onClose: () => void;
   onConfirm: () => void;
   sourceName: string;
+  itemType?: string;
 }
 
 export const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
   isOpen,
   onClose,
   onConfirm,
-  sourceName
+  sourceName,
+  itemType = "source"
 }) => {
   if (!isOpen) return null;
 
@@ -41,7 +43,7 @@ export const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> =
               <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                 <XCircle className="w-5 h-5 text-red-600" />
                 <div>
-                  <div className="font-medium text-slate-900">Delete Source</div>
+                  <div className="font-medium text-slate-900">Delete {itemType.charAt(0).toUpperCase() + itemType.slice(1)}</div>
                   <div className="text-sm text-slate-600">This action cannot be undone</div>
                 </div>
               </div>
@@ -66,7 +68,7 @@ export const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> =
                 <div>
                   <p className="text-sm text-red-800 font-medium">Critical Warning</p>
                   <p className="text-sm text-red-700 mt-1">
-                    This action will stop log collection from this source immediately and cannot be reversed.
+                    This action will {itemType === 'destination' ? 'disconnect the SIEM and stop log forwarding' : 'stop log collection from this source'} immediately and cannot be reversed.
                   </p>
                 </div>
               </div>
@@ -85,7 +87,7 @@ export const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> =
               onClick={onConfirm}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Delete Source
+              Delete {itemType.charAt(0).toUpperCase() + itemType.slice(1)}
             </Button>
           </div>
         </div>

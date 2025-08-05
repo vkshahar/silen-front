@@ -3,7 +3,8 @@
 import { Sidebar } from "@/components/ui/sidebar";
 import { MetricCard } from "@/components/ui/metric-card";
 import { Button } from "@/components/ui/button";
-import { Database, Play, CheckCircle, HardDrive, Search, Eye, MoreVertical, X, Info, Download, RefreshCw, Loader } from "lucide-react";
+import { AddQueryDrawer } from "@/components/ui/add-query-drawer";
+import { Database, Play, CheckCircle, HardDrive, Search, MoreVertical, X, Download, RefreshCw, Loader, Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface QueryHistory {
@@ -22,8 +23,7 @@ interface QueryHistory {
 }
 
 export default function DehydratedLogs() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
   const [selectedQuery, setSelectedQuery] = useState<QueryHistory | null>(null);
   const [queries, setQueries] = useState<QueryHistory[]>([
@@ -86,12 +86,9 @@ export default function DehydratedLogs() {
     }
   ]);
 
-  const [formData, setFormData] = useState({
-    queryName: "",
-    s3Query: ""
-  });
 
   const [selectedDestination, setSelectedDestination] = useState("");
+
 
   const destinations = [
     { id: "splunk", name: "Splunk Production", type: "Splunk" },
@@ -130,32 +127,9 @@ export default function DehydratedLogs() {
     }, 6000);
   };
 
-  const handleCreateQuery = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.queryName.trim() || !formData.s3Query.trim()) return;
-
-    const newQuery: QueryHistory = {
-      id: Date.now().toString(),
-      status: "Pending",
-      queryName: formData.queryName,
-      query: formData.s3Query,
-      created: new Date().toLocaleString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      }),
-      results: "—"
-    };
-
+  const handleAddNewQuery = (newQuery: QueryHistory) => {
     setQueries(prev => [newQuery, ...prev]);
     simulateQueryProgress(newQuery.id);
-    
-    setFormData({ queryName: "", s3Query: "" });
-    setIsModalOpen(false);
   };
 
   const handleViewResults = (query: QueryHistory) => {
@@ -314,7 +288,7 @@ export default function DehydratedLogs() {
               <div className="flex justify-end mb-4">
                 <Button 
                   className="bg-brand-primary text-white hover:bg-brand-dark"
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => setIsDrawerOpen(true)}
                 >
                   + New Query
                 </Button>
@@ -417,162 +391,12 @@ export default function DehydratedLogs() {
         </main>
       </div>
 
-      {/* Create New Query Modal */}
-      {isModalOpen && (
-        <>
-          {/* Background Overlay */}
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
-            onClick={() => setIsModalOpen(false)}
-          />
-          
-          {/* Modal */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-              {/* Modal Header */}
-              <div className="flex items-center justify-between p-6 border-b border-slate-200">
-                <h2 className="text-xl font-semibold text-slate-900">Create New Query</h2>
-                <button 
-                  onClick={() => setIsModalOpen(false)}
-                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5 text-slate-500" />
-                </button>
-              </div>
-
-              {/* Modal Content */}
-              <div className="flex">
-                {/* Form Section */}
-                <div className="flex-1 p-6">
-                  <form onSubmit={handleCreateQuery} className="space-y-6">
-                    {/* Query Name */}
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium text-slate-700">
-                        Query Name
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.queryName}
-                        onChange={(e) => setFormData(prev => ({ ...prev, queryName: e.target.value }))}
-                        placeholder="e.g., Security Events Last Week"
-                        className="w-full px-3 py-2 border border-brand-primary rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-colors"
-                        required
-                      />
-                    </div>
-
-                    {/* S3 Query */}
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium text-slate-700">
-                        S3 Query
-                      </label>
-                      <textarea
-                        value={formData.s3Query}
-                        onChange={(e) => setFormData(prev => ({ ...prev, s3Query: e.target.value }))}
-                        placeholder="Enter your S3 query using SQL-like syntax..."
-                        rows={6}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-colors resize-none font-mono text-sm"
-                        required
-                      />
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-3 pt-4">
-                      <Button 
-                        type="submit"
-                        className="bg-brand-primary text-white hover:bg-brand-dark"
-                      >
-                        Create Query
-                      </Button>
-                      <Button 
-                        type="button"
-                        variant="outline"
-                        onClick={() => setIsModalOpen(false)}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </form>
-                </div>
-
-                {/* Query Syntax Help Section */}
-                <div className="w-80 bg-slate-50 border-l border-slate-200 p-6 overflow-y-auto">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Info className="h-5 w-5 text-brand-primary" />
-                    <h3 className="font-semibold text-slate-900">Query Syntax</h3>
-                  </div>
-
-                  {/* Supported Operators */}
-                  <div className="mb-6">
-                    <h4 className="text-sm font-medium text-slate-700 mb-2">Supported Operators:</h4>
-                    <div className="space-y-1 text-sm">
-                      <div className="flex gap-2">
-                        <code className="bg-slate-200 px-1 rounded text-xs">AND</code>
-                        <code className="bg-slate-200 px-1 rounded text-xs">OR</code>
-                        <code className="bg-slate-200 px-1 rounded text-xs">NOT</code>
-                        <code className="bg-slate-200 px-1 rounded text-xs">CONTAINS</code>
-                      </div>
-                      <div className="flex gap-2">
-                        <code className="bg-slate-200 px-1 rounded text-xs">=</code>
-                        <code className="bg-slate-200 px-1 rounded text-xs">&gt;=</code>
-                        <code className="bg-slate-200 px-1 rounded text-xs">&lt;=</code>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Common Fields */}
-                  <div className="mb-6">
-                    <h4 className="text-sm font-medium text-slate-700 mb-2">Common Fields:</h4>
-                    <div className="space-y-1 text-xs text-slate-600">
-                      <div><code className="bg-slate-200 px-1 rounded">timestamp</code></div>
-                      <div><code className="bg-slate-200 px-1 rounded">source</code></div>
-                      <div><code className="bg-slate-200 px-1 rounded">level</code></div>
-                      <div><code className="bg-slate-200 px-1 rounded">message</code></div>
-                      <div><code className="bg-slate-200 px-1 rounded">host</code></div>
-                    </div>
-                  </div>
-
-                  {/* Examples */}
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-medium text-slate-700">Examples</h4>
-                    
-                    <div>
-                      <h5 className="text-xs font-medium text-slate-600 mb-1">Time Range Query</h5>
-                      <code className="block text-xs bg-slate-200 p-2 rounded">
-                        timestamp &gt;= "2024-01-01" AND timestamp &lt; "2024-01-08"
-                      </code>
-                      <p className="text-xs text-slate-500 mt-1">Filter logs by date range</p>
-                    </div>
-
-                    <div>
-                      <h5 className="text-xs font-medium text-slate-600 mb-1">Source Filter</h5>
-                      <code className="block text-xs bg-slate-200 p-2 rounded">
-                        source="application-logs" OR source="error-logs"
-                      </code>
-                      <p className="text-xs text-slate-500 mt-1">Query specific log sources</p>
-                    </div>
-
-                    <div>
-                      <h5 className="text-xs font-medium text-slate-600 mb-1">Text Search</h5>
-                      <code className="block text-xs bg-slate-200 p-2 rounded">
-                        message CONTAINS "error" AND level="ERROR"
-                      </code>
-                      <p className="text-xs text-slate-500 mt-1">Search for text within log messages</p>
-                    </div>
-
-                    <div>
-                      <h5 className="text-xs font-medium text-slate-600 mb-1">Complex Query</h5>
-                      <code className="block text-xs bg-slate-200 p-2 rounded">
-                        source="security" AND (level="WARN" OR level="ERROR") AND timestamp &gt;= "2024-01-01"
-                      </code>
-                      <p className="text-xs text-slate-500 mt-1">Combine multiple conditions</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+      {/* Add Query Drawer */}
+      <AddQueryDrawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)}
+        onAddQuery={handleAddNewQuery}
+      />
 
       {/* Query Results Modal */}
       {isResultsModalOpen && selectedQuery && (

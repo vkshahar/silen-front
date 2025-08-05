@@ -21,7 +21,7 @@ export default function FiltersManagement() {
       type: "Windows Event Logs",
       status: "Active",
       reduction: "25% reduction",
-      savings: "$161/month",
+      savings: "$2,250/month",
       enabled: true
     },
     {
@@ -30,7 +30,7 @@ export default function FiltersManagement() {
       type: "All Log Sources",
       status: "Active",
       reduction: "80% reduction", 
-      savings: "$2,845/month",
+      savings: "$42,675/month",
       enabled: true
     },
     {
@@ -39,7 +39,7 @@ export default function FiltersManagement() {
       type: "Linux Syslogs", 
       status: "Inactive",
       reduction: "65% reduction",
-      savings: "$3,247/month",
+      savings: "$48,705/month",
       enabled: false
     }
   ]);
