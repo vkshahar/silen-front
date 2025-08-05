@@ -45,8 +45,8 @@ export default function OptimizationInitiatives() {
       savings: "$161/month",
       risk: "Low risk",
       sample: {
-        line1: "DEBUG 2025-01-07T12:00:00Z process_id=1234",
-        line2: "module=auth message=\"Debug step 1 of 12\""
+        line1: "Event ID: 1001 | Source: Microsoft-Windows-Winlogon",
+        line2: "Debug: User logon session started | Process: winlogon.exe"
       },
       buttonText: "Apply"
     },
@@ -87,7 +87,7 @@ export default function OptimizationInitiatives() {
     {
       id: "chrome-updater",
       title: "Filter Chrome Updater Events",
-      source: "Application Logs",
+      source: "Windows Event Logs",
       volume: "6.8GB",
       period: "Daily reduction",
       description: "Remove Chrome updater background events that generate high volume with no security relevance",
@@ -96,8 +96,8 @@ export default function OptimizationInitiatives() {
       savings: "$78/month",
       risk: "Low risk",
       sample: {
-        line1: "INFO 2025-01-07T12:00:00Z app=chrome",
-        line2: "message=\"Updater check completed\" version=120.0.6099.109"
+        line1: "Event ID: 4688 | Source: Microsoft-Windows-Security-Auditing",
+        line2: "Process: chrome.exe | Command: --update-check"
       },
       buttonText: "Apply"
     },
@@ -138,7 +138,7 @@ export default function OptimizationInitiatives() {
     {
       id: "outlook-events",
       title: "Filter Outlook Execution Events",
-      source: "Application Logs",
+      source: "Sysmon",
       volume: "11.2GB",
       period: "Daily reduction",
       description: "Remove routine Outlook execution events that provide no security or operational value",
@@ -147,8 +147,8 @@ export default function OptimizationInitiatives() {
       savings: "$118/month",
       risk: "Low risk",
       sample: {
-        line1: "INFO 2025-01-07T12:00:00Z app=outlook",
-        line2: "message=\"Process started\" pid=12345 user=john.doe"
+        line1: "Event ID: 1 | Source: Microsoft-Windows-Sysmon",
+        line2: "Process: OUTLOOK.EXE | Parent: explorer.exe"
       },
       buttonText: "Apply"
     },
