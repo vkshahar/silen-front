@@ -1,24 +1,26 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { Database, Shield, Server, Cloud, Activity, Target } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Database, Shield, Server, Cloud, Activity, Target, Shuffle } from 'lucide-react';
 
 interface FlowNode {
   id: string;
   label: string;
   volume: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   type: 'source' | 'destination';
 }
 
-interface FlowConnection {
-  source: string;
-  destination: string;
+interface HubNode {
+  id: 'hub';
+  label: string;
+  description: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  type: 'hub';
 }
 
 export const SimpleFlowChart = () => {
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
-  const [expandedSources, setExpandedSources] = useState(false);
   const [showAllSources, setShowAllSources] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -84,22 +86,14 @@ export const SimpleFlowChart = () => {
       return allSources.slice(0, INITIAL_SOURCES_LIMIT);
     }
     
-    if (allSources.length <= MAX_DISPLAYABLE_SOURCES) {
-      return allSources;
-    }
-    
-    // For 100+ sources, use pagination
-    const startIndex = currentPage * SOURCES_PER_PAGE;
-    const endIndex = Math.min(startIndex + SOURCES_PER_PAGE, allSources.length);
-    return allSources.slice(startIndex, endIndex);
+    // When expanded, show all sources immediately in columns
+    return allSources;
   };
   
   const visibleSources = getVisibleSources();
   const hiddenSourcesCount = showAllSources 
-    ? Math.max(0, allSources.length - visibleSources.length)
+    ? 0 // No hidden sources when expanded - show all
     : allSources.length - INITIAL_SOURCES_LIMIT;
-  const totalPages = Math.ceil(allSources.length / SOURCES_PER_PAGE);
-  const needsPagination = showAllSources && allSources.length > MAX_DISPLAYABLE_SOURCES;
 
   const destinations: FlowNode[] = [
     { id: 'splunk', label: 'Splunk', volume: 'Active', icon: Activity, type: 'destination' },
@@ -108,76 +102,17 @@ export const SimpleFlowChart = () => {
     { id: 'sentinel', label: 'Sentinel', volume: 'Active', icon: Cloud, type: 'destination' }
   ];
 
-  const allConnections: FlowConnection[] = [
-    // Initial visible sources
-    { source: 'windows', destination: 'splunk' },
-    { source: 'windows', destination: 'sentinel' },
-    { source: 'linux', destination: 'datadog' },
-    { source: 'linux', destination: 'elastic' },
-    { source: 'aws', destination: 'splunk' },
-    { source: 'aws', destination: 'datadog' },
-    { source: 'aws', destination: 'sentinel' },
-    { source: 'entra', destination: 'sentinel' },
-    { source: 'entra', destination: 'elastic' },
-    // Expanded sources connections
-    { source: 'firewall', destination: 'splunk' },
-    { source: 'firewall', destination: 'elastic' },
-    { source: 'nginx', destination: 'datadog' },
-    { source: 'docker', destination: 'elastic' },
-    { source: 'apache', destination: 'splunk' },
-    { source: 'kubernetes', destination: 'datadog' },
-    { source: 'kubernetes', destination: 'elastic' },
-    { source: 'mysql', destination: 'splunk' },
-    { source: 'postgresql', destination: 'datadog' },
-    { source: 'postgresql', destination: 'elastic' },
-    { source: 'redis', destination: 'elastic' },
-    { source: 'jenkins', destination: 'splunk' },
-    { source: 'jenkins', destination: 'datadog' },
-    { source: 'gitlab', destination: 'datadog' },
-    { source: 'elasticsearch', destination: 'elastic' },
-    { source: 'mongodb', destination: 'splunk' },
-    { source: 'mongodb', destination: 'datadog' },
-    { source: 'tomcat', destination: 'splunk' },
-    { source: 'iis', destination: 'sentinel' },
-    { source: 'rabbitmq', destination: 'datadog' },
-    { source: 'kafka', destination: 'elastic' },
-    { source: 'kafka', destination: 'splunk' },
-    { source: 'haproxy', destination: 'datadog' },
-    { source: 'vsphere', destination: 'splunk' },
-    { source: 'vsphere', destination: 'sentinel' },
-    { source: 'office365', destination: 'sentinel' },
-    { source: 'salesforce', destination: 'splunk' },
-    { source: 'okta', destination: 'sentinel' },
-    { source: 'crowdstrike', destination: 'splunk' },
-    { source: 'crowdstrike', destination: 'sentinel' },
-    { source: 'fortinet', destination: 'splunk' },
-    { source: 'fortinet', destination: 'elastic' },
-    { source: 'checkpoint', destination: 'splunk' },
-    { source: 'checkpoint', destination: 'sentinel' },
-    // Additional connections for new sources
-    { source: 'zabbix', destination: 'datadog' },
-    { source: 'zabbix', destination: 'splunk' },
-    { source: 'nagios', destination: 'elastic' },
-    { source: 'prometheus', destination: 'grafana' },
-    { source: 'prometheus', destination: 'datadog' },
-    { source: 'grafana', destination: 'elastic' },
-    { source: 'azure', destination: 'sentinel' },
-    { source: 'azure', destination: 'splunk' },
-    { source: 'gcp', destination: 'elastic' },
-    { source: 'gcp', destination: 'datadog' },
-    { source: 'oracle', destination: 'splunk' },
-    { source: 'cassandra', destination: 'elastic' },
-    { source: 'airflow', destination: 'datadog' },
-    { source: 'spark', destination: 'elastic' },
-    { source: 'spark', destination: 'splunk' }
-  ];
+  // Central hub that all sources connect through
+  const hub = useCallback((): HubNode => ({
+    id: 'hub',
+    label: 'Data Processing Hub',
+    description: 'All sources route through here',
+    icon: Shuffle,
+    type: 'hub'
+  }), []);
 
-  // Memoized connections for performance
-  const visibleConnections = useMemo(() => {
-    return showAllSources 
-      ? allConnections 
-      : allConnections.filter(conn => visibleSources.some(source => source.id === conn.source));
-  }, [showAllSources, visibleSources, allConnections]);
+  // Simplified Hub Architecture: No direct source-to-destination connections
+  // All sources connect to hub, hub connects to all destinations
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
@@ -235,9 +170,11 @@ export const SimpleFlowChart = () => {
     setPanOffset({ x: 0, y: 0 });
   }, []);
 
-  const getNodePosition = (nodeId: string, type: 'source' | 'destination', isExpandNode = false) => {
-    const containerWidth = 700;
+  const getNodePosition = useCallback((nodeId: string, type: 'source' | 'destination' | 'hub', isExpandNode = false, columnIndex = 0) => {
+    const containerWidth = 1200; // Increased width to accommodate more columns
     const containerHeight = 650;
+    const SOURCES_PER_COLUMN = 10;
+    const INITIAL_COLUMN_X = 280; // Fixed position for initial column
     
     if (type === 'source') {
       const nodeList = showAllSources ? allSources : visibleSources;
@@ -247,11 +184,54 @@ export const SimpleFlowChart = () => {
         index = visibleSources.length; // Position expand node after visible sources
       }
       
-      // Improved spacing algorithm with better minimum spacing
+      // For the first 4 sources (initial column), ALWAYS keep them at the same position
+      if (index < INITIAL_SOURCES_LIMIT) {
+        // Original column positioning - never changes
+        const totalNodes = INITIAL_SOURCES_LIMIT + (hiddenSourcesCount > 0 && !showAllSources ? 1 : 0);
+        const availableHeight = containerHeight - 160;
+        const minNodeSpacing = 85;
+        const maxNodeSpacing = 110;
+        
+        let nodeSpacing = availableHeight / INITIAL_SOURCES_LIMIT; // Always base on initial sources
+        nodeSpacing = Math.max(minNodeSpacing, Math.min(maxNodeSpacing, nodeSpacing));
+        
+        const totalUsedHeight = INITIAL_SOURCES_LIMIT * nodeSpacing;
+        const startY = Math.max(30, (containerHeight - totalUsedHeight) / 2);
+        
+        return {
+          x: INITIAL_COLUMN_X, // Always at this fixed position
+          y: startY + (index * nodeSpacing)
+        };
+      }
+      
+      // Additional sources (only when expanded) - appear in columns to the left
+      if (showAllSources && index >= INITIAL_SOURCES_LIMIT) {
+        const additionalIndex = index - INITIAL_SOURCES_LIMIT;
+        const column = Math.floor(additionalIndex / SOURCES_PER_COLUMN);
+        const rowInColumn = additionalIndex % SOURCES_PER_COLUMN;
+        
+        const availableHeight = containerHeight - 160;
+        const minNodeSpacing = 60;
+        const maxNodeSpacing = 75;
+        
+        let nodeSpacing = availableHeight / SOURCES_PER_COLUMN;
+        nodeSpacing = Math.max(minNodeSpacing, Math.min(maxNodeSpacing, nodeSpacing));
+        
+        const nodesInThisColumn = Math.min(SOURCES_PER_COLUMN, allSources.length - INITIAL_SOURCES_LIMIT - (column * SOURCES_PER_COLUMN));
+        const totalUsedHeight = nodesInThisColumn * nodeSpacing;
+        const startY = Math.max(30, (containerHeight - totalUsedHeight) / 2);
+        
+        return {
+          x: INITIAL_COLUMN_X - ((column + 1) * 220), // Columns to the left of initial column
+          y: startY + (rowInColumn * nodeSpacing)
+        };
+      }
+      
+      // Fallback for non-expanded view (should only be initial sources)
       const totalNodes = nodeList.length + (hiddenSourcesCount > 0 && !showAllSources ? 1 : 0);
-      const availableHeight = containerHeight - 120; // More margin for better spacing
-      const minNodeSpacing = 72; // Minimum spacing increased for better readability
-      const maxNodeSpacing = 100; // Maximum spacing for optimal layout
+      const availableHeight = containerHeight - 160;
+      const minNodeSpacing = 85;
+      const maxNodeSpacing = 110;
       
       let nodeSpacing = availableHeight / totalNodes;
       nodeSpacing = Math.max(minNodeSpacing, Math.min(maxNodeSpacing, nodeSpacing));
@@ -260,16 +240,15 @@ export const SimpleFlowChart = () => {
       const startY = Math.max(30, (containerHeight - totalUsedHeight) / 2);
       
       return {
-        x: 80,
+        x: INITIAL_COLUMN_X,
         y: startY + (index * nodeSpacing)
       };
-    } else {
+    } else if (type === 'destination') {
       const index = destinations.findIndex(n => n.id === nodeId);
       
-      // Improved spacing for destinations with consistent algorithm
-      const availableHeight = containerHeight - 120;
-      const minNodeSpacing = 80;
-      const maxNodeSpacing = 120;
+      const availableHeight = containerHeight - 160;
+      const minNodeSpacing = 100;
+      const maxNodeSpacing = 140;
       
       let nodeSpacing = availableHeight / destinations.length;
       nodeSpacing = Math.max(minNodeSpacing, Math.min(maxNodeSpacing, nodeSpacing));
@@ -278,30 +257,42 @@ export const SimpleFlowChart = () => {
       const startY = Math.max(30, (containerHeight - totalUsedHeight) / 2);
       
       return {
-        x: containerWidth - 220,
+        x: containerWidth - 260, // Fixed position for destinations
         y: startY + (index * nodeSpacing)
       };
+    } else if (type === 'hub') {
+      // Hub stays in fixed position regardless of source expansion
+      return {
+        x: containerWidth / 2 - 100, // Fixed center position
+        y: containerHeight / 2 - 40  // Fixed center vertically
+      };
     }
-  };
+    
+    return { x: 0, y: 0 }; // Fallback
+  }, [showAllSources, visibleSources, hiddenSourcesCount, allSources, destinations]);
 
-  const renderConnection = useCallback((connection: FlowConnection) => {
-    const sourcePos = getNodePosition(connection.source, 'source');
-    const destPos = getNodePosition(connection.destination, 'destination');
+  // Render source-to-hub connections
+  const renderSourceToHubConnection = useCallback((sourceId: string) => {
+    const sourcePos = getNodePosition(sourceId, 'source');
+    const hubPos = getNodePosition('hub', 'hub');
     
-    const startX = sourcePos.x + 200;
-    const startY = sourcePos.y + 30;
-    const endX = destPos.x;
-    const endY = destPos.y + 30;
+    const startX = sourcePos.x + 200; // Right edge of source node
+    const startY = sourcePos.y + 30;  // Center of source node
+    const endX = hubPos.x;            // Left edge of hub node  
+    const endY = hubPos.y + 40;       // Center of hub node
     
-    const isHighlighted = hoveredNode === connection.source || hoveredNode === connection.destination;
+    const isHighlighted = hoveredNode === sourceId || hoveredNode === 'hub';
     
-    // Create smooth curve path
-    const midX = (startX + endX) / 2;
-    const path = `M ${startX} ${startY} Q ${midX} ${startY} ${midX} ${(startY + endY) / 2} Q ${midX} ${endY} ${endX} ${endY}`;
+    // Create smooth curve path that works better with multiple columns
+    const controlPointOffset = Math.min(100, Math.abs(endX - startX) * 0.5);
+    const midX1 = startX + controlPointOffset;
+    const midX2 = endX - controlPointOffset;
+    const path = `M ${startX} ${startY} C ${midX1} ${startY} ${midX2} ${endY} ${endX} ${endY}`;
     
     return (
       <path
-        key={`${connection.source}-${connection.destination}`}
+        key={`source-to-hub-${sourceId}`}
+        data-testid={`source-to-hub-${sourceId}`}
         d={path}
         stroke={isHighlighted ? "#8b5cf6" : "#94a3b8"}
         strokeWidth={isHighlighted ? 3 : 2}
@@ -314,20 +305,74 @@ export const SimpleFlowChart = () => {
         }}
       />
     );
-  }, [hoveredNode]);
+  }, [hoveredNode, getNodePosition]);
+
+  // Render hub-to-destination connections  
+  const renderHubToDestConnection = useCallback((destinationId: string) => {
+    const hubPos = getNodePosition('hub', 'hub');
+    const destPos = getNodePosition(destinationId, 'destination');
+    
+    const startX = hubPos.x + 200;    // Right edge of hub node
+    const startY = hubPos.y + 40;     // Center of hub node
+    const endX = destPos.x;           // Left edge of destination node
+    const endY = destPos.y + 30;      // Center of destination node
+    
+    const isHighlighted = hoveredNode === 'hub' || hoveredNode === destinationId;
+    
+    // Create smooth curve path with improved control points
+    const controlPointOffset = Math.min(80, Math.abs(endX - startX) * 0.4);
+    const midX1 = startX + controlPointOffset;
+    const midX2 = endX - controlPointOffset;
+    const path = `M ${startX} ${startY} C ${midX1} ${startY} ${midX2} ${endY} ${endX} ${endY}`;
+    
+    return (
+      <path
+        key={`hub-to-dest-${destinationId}`}
+        data-testid={`hub-to-dest-${destinationId}`}
+        d={path}
+        stroke={isHighlighted ? "#8b5cf6" : "#94a3b8"}
+        strokeWidth={isHighlighted ? 3 : 2}
+        strokeDasharray={isHighlighted ? "6,3" : "5,3"}
+        fill="none"
+        className="transition-all duration-300"
+        style={{
+          filter: isHighlighted ? "drop-shadow(0 0 6px rgba(139, 92, 246, 0.4))" : "drop-shadow(0 0 2px rgba(148, 163, 184, 0.2))",
+          opacity: isHighlighted ? 1 : 0.7
+        }}
+      />
+    );
+  }, [hoveredNode, getNodePosition]);
 
   const renderExpandNode = () => {
-    if (hiddenSourcesCount <= 0 && !needsPagination) return null;
+    if (hiddenSourcesCount <= 0) return null;
     
-    const position = getNodePosition('expand', 'source', true);
-    const isHovered = hoveredNode === 'expand';
     const isExpanded = showAllSources;
+    const INITIAL_COLUMN_X = 280; // Same as in getNodePosition
+    
+    let position;
+    if (!isExpanded) {
+      // Position after the last visible source in the original column
+      const lastVisibleIndex = visibleSources.length - 1;
+      const lastVisiblePos = getNodePosition(visibleSources[lastVisibleIndex]?.id || 'dummy', 'source');
+      position = {
+        x: INITIAL_COLUMN_X, // Always at the initial column position
+        y: lastVisiblePos.y + 95 // Space after last visible source
+      };
+    } else {
+      // When expanded, show collapse button at bottom of original column (fixed position)
+      position = {
+        x: INITIAL_COLUMN_X, // Always at the initial column position
+        y: 570 // Bottom of container
+      };
+    }
+    
+    const isHovered = hoveredNode === 'expand';
     
     return (
       <div
         key="expand-node"
-        className={`absolute transition-all duration-300 cursor-pointer ${
-          isHovered ? 'scale-105 z-10' : 'scale-100'
+        className={`absolute transition-all duration-300 cursor-pointer z-10 ${
+          isHovered ? 'scale-105' : 'scale-100'
         }`}
         style={{
           left: position.x,
@@ -339,15 +384,15 @@ export const SimpleFlowChart = () => {
         onMouseLeave={() => setHoveredNode(null)}
         onClick={() => {
           setShowAllSources(!showAllSources);
-          setCurrentPage(0); // Reset to first page when expanding
         }}
       >
         <div className={`
           w-full h-full rounded-lg border-2 transition-all duration-300 
           flex items-center justify-center
-          ${isHovered 
-            ? 'bg-purple-50 border-purple-300 shadow-lg shadow-purple-100' 
-            : 'bg-purple-25 border-purple-200 border-dashed hover:border-purple-300'
+          ${
+            isHovered 
+              ? 'bg-purple-50 border-purple-300 shadow-lg shadow-purple-100' 
+              : 'bg-purple-25 border-purple-200 border-dashed hover:border-purple-300'
           }
         `}>
           <div className={`
@@ -355,17 +400,10 @@ export const SimpleFlowChart = () => {
             ${isHovered ? 'text-purple-700' : 'text-purple-600'}
           `}>
             {isExpanded ? (
-              needsPagination ? (
-                <>
-                  <div>Page {currentPage + 1} of {totalPages}</div>
-                  <div className="text-xs opacity-75">{allSources.length} total sources</div>
-                </>
-              ) : (
-                <>
-                  <div>Show less</div>
-                  <div className="text-xs opacity-75">Click to collapse</div>
-                </>
-              )
+              <>
+                <div>Show less</div>
+                <div className="text-xs opacity-75">Click to collapse</div>
+              </>
             ) : (
               <>
                 <div>+{hiddenSourcesCount} others</div>
@@ -378,19 +416,98 @@ export const SimpleFlowChart = () => {
     );
   };
 
+  // Render hub node with special styling
+  const renderHubNode = useCallback(() => {
+    const position = getNodePosition('hub', 'hub');
+    const isHovered = hoveredNode === 'hub';
+    const isConnected = hoveredNode !== null && hoveredNode !== 'hub'; // Hub is always "connected" when any other node is hovered
+    const hubData = hub();
+    
+    return (
+      <div
+        key="hub"
+        data-testid="hub-node"
+        className={`absolute transition-all duration-300 hub-node ${
+          isHovered ? 'scale-110 z-20' : isConnected ? 'scale-105' : 'scale-100'
+        }`}
+        style={{
+          left: position.x,
+          top: position.y,
+          width: 200,
+          height: 80 // Slightly taller than regular nodes
+        }}
+        onMouseEnter={() => setHoveredNode('hub')}
+        onMouseLeave={() => setHoveredNode(null)}
+      >
+        <div className={`
+          w-full h-full rounded-lg border-2 transition-all duration-300 cursor-pointer
+          flex flex-col items-center justify-center px-3 gap-1
+          ${isHovered 
+            ? 'bg-gradient-to-br from-purple-50 to-purple-100 border-purple-300 shadow-xl shadow-purple-200' 
+            : isConnected
+            ? 'bg-gradient-to-br from-purple-25 to-purple-50 border-purple-200'
+            : 'bg-gradient-to-br from-slate-50 to-purple-25 border-purple-200 hover:border-purple-300'
+          }
+        `}>
+          <div className={`
+            w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+            ${isHovered 
+              ? 'bg-purple-200' 
+              : isConnected 
+              ? 'bg-purple-100'
+              : 'bg-purple-50'
+            }
+          `}>
+            <hubData.icon className={`
+              w-5 h-5 transition-all duration-300
+              ${isHovered 
+                ? 'text-purple-700' 
+                : isConnected
+                ? 'text-purple-600'
+                : 'text-purple-500'
+              }
+            `} />
+          </div>
+          <div className="text-center">
+            <div className={`
+              text-xs font-semibold transition-all duration-300 leading-tight
+              ${isHovered 
+                ? 'text-purple-900' 
+                : isConnected
+                ? 'text-purple-800'
+                : 'text-purple-700'
+              }
+            `}>
+              {hubData.label}
+            </div>
+            <div className={`
+              text-xs transition-all duration-300 truncate
+              ${isHovered 
+                ? 'text-purple-700' 
+                : isConnected
+                ? 'text-purple-600'
+                : 'text-purple-500'
+              }
+            `}>
+              {hubData.description}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }, [hoveredNode, getNodePosition, hub]);
+
   const renderNode = useCallback((node: FlowNode) => {
     const position = getNodePosition(node.id, node.type);
     const isHovered = hoveredNode === node.id;
-    const isConnected = hoveredNode && visibleConnections.some(c => 
-      (c.source === node.id && c.destination === hoveredNode) ||
-      (c.destination === node.id && c.source === hoveredNode)
-    );
+    const isConnected = hoveredNode === 'hub' || (hoveredNode !== null && hoveredNode !== node.id);
     
     return (
       <div
         key={node.id}
+        data-testid={`${node.type}-node-${node.id}`}
         className={`absolute transition-all duration-300 ${
-          isHovered ? 'scale-105 z-10' : isConnected ? 'scale-102' : 'scale-100'
+          isHovered ? 'scale-105 z-10' : isConnected && hoveredNode === 'hub' ? 'scale-102' : 'scale-100'
         }`}
         style={{
           left: position.x,
@@ -406,7 +523,7 @@ export const SimpleFlowChart = () => {
           flex items-center px-3 gap-2
           ${isHovered 
             ? 'bg-purple-50 border-purple-200 shadow-lg shadow-purple-100' 
-            : isConnected
+            : (isConnected && hoveredNode === 'hub')
             ? 'bg-purple-25 border-purple-100'
             : 'bg-white border-slate-200 hover:border-slate-300'
           }
@@ -415,7 +532,7 @@ export const SimpleFlowChart = () => {
             w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300
             ${isHovered 
               ? 'bg-purple-100' 
-              : isConnected 
+              : (isConnected && hoveredNode === 'hub')
               ? 'bg-purple-50'
               : 'bg-slate-50'
             }
@@ -424,7 +541,7 @@ export const SimpleFlowChart = () => {
               w-4 h-4 transition-all duration-300
               ${isHovered 
                 ? 'text-purple-600' 
-                : isConnected
+                : (isConnected && hoveredNode === 'hub')
                 ? 'text-purple-500'
                 : 'text-slate-500'
               }
@@ -435,7 +552,7 @@ export const SimpleFlowChart = () => {
               text-xs font-medium transition-all duration-300 leading-tight
               ${isHovered 
                 ? 'text-purple-900' 
-                : isConnected
+                : (isConnected && hoveredNode === 'hub')
                 ? 'text-purple-700'
                 : 'text-slate-700'
               }
@@ -446,7 +563,7 @@ export const SimpleFlowChart = () => {
               text-xs transition-all duration-300 truncate
               ${isHovered 
                 ? 'text-purple-600' 
-                : isConnected
+                : (isConnected && hoveredNode === 'hub')
                 ? 'text-purple-500'
                 : 'text-slate-500'
               }
@@ -457,7 +574,7 @@ export const SimpleFlowChart = () => {
         </div>
       </div>
     );
-  }, [hoveredNode, visibleConnections]);
+  }, [hoveredNode, getNodePosition]);
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6">
@@ -504,53 +621,45 @@ export const SimpleFlowChart = () => {
         
         {/* Centered container with zoom and pan */}
         <div 
-          className="relative w-[700px] h-full"
+          className="relative w-[1200px] h-full" // Updated width to accommodate more columns
+          data-testid="flow-chart-container"
           style={{
             transform: `scale(${zoomLevel}) translate(${panOffset.x / zoomLevel}px, ${panOffset.y / zoomLevel}px)`,
             transformOrigin: 'center center'
           }}
         >
-          {/* SVG for connections */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none">
-            {visibleConnections.map(renderConnection)}
+          {/* SVG for connections - layered behind nodes with z-index */}
+          <svg 
+            className="absolute inset-0 w-full h-full pointer-events-none z-0"
+            data-testid="connection-svg"
+            style={{ zIndex: 0 }}
+          >
+            {/* Source-to-hub connections */}
+            {visibleSources.map(source => renderSourceToHubConnection(source.id))}
+            
+            {/* Hub-to-destination connections */}
+            {destinations.map(destination => renderHubToDestConnection(destination.id))}
           </svg>
           
-          {/* Source nodes */}
-          {visibleSources.map(renderNode)}
-          
-          {/* Expand node */}
-          {renderExpandNode()}
-          
-          {/* Destination nodes */}
-          {destinations.map(renderNode)}
-        </div>
-        
-        {/* Pagination controls for large datasets */}
-        {needsPagination && (
-          <div className="absolute bottom-16 left-4 flex items-center gap-2 bg-white/90 px-3 py-2 rounded-lg border border-slate-200 shadow-sm">
-            <button
-              onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
-              disabled={currentPage === 0}
-              className="w-8 h-8 flex items-center justify-center rounded bg-slate-100 hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed text-slate-600 text-sm font-medium"
-            >
-              ‹
-            </button>
-            <span className="text-xs text-slate-600 px-2">
-              {currentPage + 1} / {totalPages}
-            </span>
-            <button
-              onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
-              disabled={currentPage >= totalPages - 1}
-              className="w-8 h-8 flex items-center justify-center rounded bg-slate-100 hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed text-slate-600 text-sm font-medium"
-            >
-              ›
-            </button>
+          {/* All nodes layered above connections with higher z-index */}
+          <div className="relative z-10">
+            {/* Source nodes */}
+            {visibleSources.map(renderNode)}
+            
+            {/* Hub node */}
+            {renderHubNode()}
+            
+            {/* Expand node */}
+            {renderExpandNode()}
+            
+            {/* Destination nodes */}
+            {destinations.map(renderNode)}
           </div>
-        )}
+        </div>
         
         {/* Zoom instructions */}
         <div className="absolute bottom-4 right-4 text-xs text-slate-500 bg-white/80 px-2 py-1 rounded border border-slate-200">
-          Scroll to zoom • Drag to pan{needsPagination && ' • Use arrows to navigate'}
+          Scroll to zoom • Drag to pan
         </div>
       </div>
     </div>
