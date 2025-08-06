@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Database, Shield, Server, Cloud, Activity, Target } from 'lucide-react';
 
 interface FlowNode {
@@ -20,6 +20,7 @@ export const SimpleFlowChart = () => {
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [expandedSources, setExpandedSources] = useState(false);
   const [showAllSources, setShowAllSources] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
@@ -29,6 +30,8 @@ export const SimpleFlowChart = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   
   const INITIAL_SOURCES_LIMIT = 4;
+  const SOURCES_PER_PAGE = 8;
+  const MAX_DISPLAYABLE_SOURCES = 25;
   const MIN_ZOOM = 0.5;
   const MAX_ZOOM = 2;
 
@@ -61,11 +64,42 @@ export const SimpleFlowChart = () => {
     { id: 'okta', label: 'Okta Identity Management', volume: '5.8 GB/day', icon: Shield, type: 'source' },
     { id: 'crowdstrike', label: 'CrowdStrike Endpoint Protection', volume: '9.3 GB/day', icon: Shield, type: 'source' },
     { id: 'fortinet', label: 'Fortinet FortiGate Firewall', volume: '13.7 GB/day', icon: Shield, type: 'source' },
-    { id: 'checkpoint', label: 'Check Point Security Gateway', volume: '10.5 GB/day', icon: Shield, type: 'source' }
+    { id: 'checkpoint', label: 'Check Point Security Gateway', volume: '10.5 GB/day', icon: Shield, type: 'source' },
+    // Additional sources for testing 100+ scenario
+    { id: 'zabbix', label: 'Zabbix Monitoring System', volume: '7.2 GB/day', icon: Activity, type: 'source' },
+    { id: 'nagios', label: 'Nagios Core Monitoring', volume: '5.4 GB/day', icon: Activity, type: 'source' },
+    { id: 'prometheus', label: 'Prometheus Metrics Server', volume: '11.8 GB/day', icon: Target, type: 'source' },
+    { id: 'grafana', label: 'Grafana Analytics Platform', volume: '3.9 GB/day', icon: Target, type: 'source' },
+    { id: 'azure', label: 'Microsoft Azure Activity Logs', volume: '19.5 GB/day', icon: Cloud, type: 'source' },
+    { id: 'gcp', label: 'Google Cloud Platform Logs', volume: '16.7 GB/day', icon: Cloud, type: 'source' },
+    { id: 'oracle', label: 'Oracle Database Server Logs', volume: '8.1 GB/day', icon: Database, type: 'source' },
+    { id: 'cassandra', label: 'Apache Cassandra Cluster', volume: '12.3 GB/day', icon: Database, type: 'source' },
+    { id: 'airflow', label: 'Apache Airflow Workflows', volume: '6.7 GB/day', icon: Cloud, type: 'source' },
+    { id: 'spark', label: 'Apache Spark Processing', volume: '14.2 GB/day', icon: Server, type: 'source' }
   ];
 
-  const visibleSources = showAllSources ? allSources : allSources.slice(0, INITIAL_SOURCES_LIMIT);
-  const hiddenSourcesCount = allSources.length - INITIAL_SOURCES_LIMIT;
+  // Smart source display logic to handle large datasets
+  const getVisibleSources = () => {
+    if (!showAllSources) {
+      return allSources.slice(0, INITIAL_SOURCES_LIMIT);
+    }
+    
+    if (allSources.length <= MAX_DISPLAYABLE_SOURCES) {
+      return allSources;
+    }
+    
+    // For 100+ sources, use pagination
+    const startIndex = currentPage * SOURCES_PER_PAGE;
+    const endIndex = Math.min(startIndex + SOURCES_PER_PAGE, allSources.length);
+    return allSources.slice(startIndex, endIndex);
+  };
+  
+  const visibleSources = getVisibleSources();
+  const hiddenSourcesCount = showAllSources 
+    ? Math.max(0, allSources.length - visibleSources.length)
+    : allSources.length - INITIAL_SOURCES_LIMIT;
+  const totalPages = Math.ceil(allSources.length / SOURCES_PER_PAGE);
+  const needsPagination = showAllSources && allSources.length > MAX_DISPLAYABLE_SOURCES;
 
   const destinations: FlowNode[] = [
     { id: 'splunk', label: 'Splunk', volume: 'Active', icon: Activity, type: 'destination' },
@@ -119,12 +153,31 @@ export const SimpleFlowChart = () => {
     { source: 'fortinet', destination: 'splunk' },
     { source: 'fortinet', destination: 'elastic' },
     { source: 'checkpoint', destination: 'splunk' },
-    { source: 'checkpoint', destination: 'sentinel' }
+    { source: 'checkpoint', destination: 'sentinel' },
+    // Additional connections for new sources
+    { source: 'zabbix', destination: 'datadog' },
+    { source: 'zabbix', destination: 'splunk' },
+    { source: 'nagios', destination: 'elastic' },
+    { source: 'prometheus', destination: 'grafana' },
+    { source: 'prometheus', destination: 'datadog' },
+    { source: 'grafana', destination: 'elastic' },
+    { source: 'azure', destination: 'sentinel' },
+    { source: 'azure', destination: 'splunk' },
+    { source: 'gcp', destination: 'elastic' },
+    { source: 'gcp', destination: 'datadog' },
+    { source: 'oracle', destination: 'splunk' },
+    { source: 'cassandra', destination: 'elastic' },
+    { source: 'airflow', destination: 'datadog' },
+    { source: 'spark', destination: 'elastic' },
+    { source: 'spark', destination: 'splunk' }
   ];
 
-  const visibleConnections = showAllSources 
-    ? allConnections 
-    : allConnections.filter(conn => visibleSources.some(source => source.id === conn.source));
+  // Memoized connections for performance
+  const visibleConnections = useMemo(() => {
+    return showAllSources 
+      ? allConnections 
+      : allConnections.filter(conn => visibleSources.some(source => source.id === conn.source));
+  }, [showAllSources, visibleSources, allConnections]);
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
@@ -177,10 +230,10 @@ export const SimpleFlowChart = () => {
     setIsPanning(false);
   };
 
-  const resetView = () => {
+  const resetView = useCallback(() => {
     setZoomLevel(1);
     setPanOffset({ x: 0, y: 0 });
-  };
+  }, []);
 
   const getNodePosition = (nodeId: string, type: 'source' | 'destination', isExpandNode = false) => {
     const containerWidth = 700;
@@ -194,12 +247,17 @@ export const SimpleFlowChart = () => {
         index = visibleSources.length; // Position expand node after visible sources
       }
       
-      // Calculate spacing to fit all nodes properly
+      // Improved spacing algorithm with better minimum spacing
       const totalNodes = nodeList.length + (hiddenSourcesCount > 0 && !showAllSources ? 1 : 0);
-      const availableHeight = containerHeight - 100; // Leave margins
-      const nodeSpacing = Math.min(90, Math.max(50, availableHeight / totalNodes));
+      const availableHeight = containerHeight - 120; // More margin for better spacing
+      const minNodeSpacing = 72; // Minimum spacing increased for better readability
+      const maxNodeSpacing = 100; // Maximum spacing for optimal layout
+      
+      let nodeSpacing = availableHeight / totalNodes;
+      nodeSpacing = Math.max(minNodeSpacing, Math.min(maxNodeSpacing, nodeSpacing));
+      
       const totalUsedHeight = totalNodes * nodeSpacing;
-      const startY = Math.max(20, (containerHeight - totalUsedHeight) / 2);
+      const startY = Math.max(30, (containerHeight - totalUsedHeight) / 2);
       
       return {
         x: 80,
@@ -208,11 +266,16 @@ export const SimpleFlowChart = () => {
     } else {
       const index = destinations.findIndex(n => n.id === nodeId);
       
-      // Calculate spacing for destinations to distribute evenly
-      const availableHeight = containerHeight - 100; // Leave margins
-      const nodeSpacing = Math.min(90, Math.max(50, availableHeight / destinations.length));
+      // Improved spacing for destinations with consistent algorithm
+      const availableHeight = containerHeight - 120;
+      const minNodeSpacing = 80;
+      const maxNodeSpacing = 120;
+      
+      let nodeSpacing = availableHeight / destinations.length;
+      nodeSpacing = Math.max(minNodeSpacing, Math.min(maxNodeSpacing, nodeSpacing));
+      
       const totalUsedHeight = destinations.length * nodeSpacing;
-      const startY = Math.max(20, (containerHeight - totalUsedHeight) / 2);
+      const startY = Math.max(30, (containerHeight - totalUsedHeight) / 2);
       
       return {
         x: containerWidth - 220,
@@ -221,7 +284,7 @@ export const SimpleFlowChart = () => {
     }
   };
 
-  const renderConnection = (connection: FlowConnection) => {
+  const renderConnection = useCallback((connection: FlowConnection) => {
     const sourcePos = getNodePosition(connection.source, 'source');
     const destPos = getNodePosition(connection.destination, 'destination');
     
@@ -240,20 +303,21 @@ export const SimpleFlowChart = () => {
       <path
         key={`${connection.source}-${connection.destination}`}
         d={path}
-        stroke={isHighlighted ? "#8b5cf6" : "#e2e8f0"}
-        strokeWidth={isHighlighted ? 2 : 1}
-        strokeDasharray="4,4"
+        stroke={isHighlighted ? "#8b5cf6" : "#94a3b8"}
+        strokeWidth={isHighlighted ? 3 : 2}
+        strokeDasharray={isHighlighted ? "6,3" : "5,3"}
         fill="none"
         className="transition-all duration-300"
         style={{
-          filter: isHighlighted ? "drop-shadow(0 0 4px rgba(139, 92, 246, 0.3))" : "none"
+          filter: isHighlighted ? "drop-shadow(0 0 6px rgba(139, 92, 246, 0.4))" : "drop-shadow(0 0 2px rgba(148, 163, 184, 0.2))",
+          opacity: isHighlighted ? 1 : 0.7
         }}
       />
     );
-  };
+  }, [hoveredNode]);
 
   const renderExpandNode = () => {
-    if (hiddenSourcesCount <= 0) return null;
+    if (hiddenSourcesCount <= 0 && !needsPagination) return null;
     
     const position = getNodePosition('expand', 'source', true);
     const isHovered = hoveredNode === 'expand';
@@ -273,7 +337,10 @@ export const SimpleFlowChart = () => {
         }}
         onMouseEnter={() => setHoveredNode('expand')}
         onMouseLeave={() => setHoveredNode(null)}
-        onClick={() => setShowAllSources(!showAllSources)}
+        onClick={() => {
+          setShowAllSources(!showAllSources);
+          setCurrentPage(0); // Reset to first page when expanding
+        }}
       >
         <div className={`
           w-full h-full rounded-lg border-2 transition-all duration-300 
@@ -288,10 +355,17 @@ export const SimpleFlowChart = () => {
             ${isHovered ? 'text-purple-700' : 'text-purple-600'}
           `}>
             {isExpanded ? (
-              <>
-                <div>Show less</div>
-                <div className="text-xs opacity-75">Click to collapse</div>
-              </>
+              needsPagination ? (
+                <>
+                  <div>Page {currentPage + 1} of {totalPages}</div>
+                  <div className="text-xs opacity-75">{allSources.length} total sources</div>
+                </>
+              ) : (
+                <>
+                  <div>Show less</div>
+                  <div className="text-xs opacity-75">Click to collapse</div>
+                </>
+              )
             ) : (
               <>
                 <div>+{hiddenSourcesCount} others</div>
@@ -304,7 +378,7 @@ export const SimpleFlowChart = () => {
     );
   };
 
-  const renderNode = (node: FlowNode) => {
+  const renderNode = useCallback((node: FlowNode) => {
     const position = getNodePosition(node.id, node.type);
     const isHovered = hoveredNode === node.id;
     const isConnected = hoveredNode && visibleConnections.some(c => 
@@ -383,7 +457,7 @@ export const SimpleFlowChart = () => {
         </div>
       </div>
     );
-  };
+  }, [hoveredNode, visibleConnections]);
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6">
@@ -451,9 +525,32 @@ export const SimpleFlowChart = () => {
           {destinations.map(renderNode)}
         </div>
         
+        {/* Pagination controls for large datasets */}
+        {needsPagination && (
+          <div className="absolute bottom-16 left-4 flex items-center gap-2 bg-white/90 px-3 py-2 rounded-lg border border-slate-200 shadow-sm">
+            <button
+              onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
+              disabled={currentPage === 0}
+              className="w-8 h-8 flex items-center justify-center rounded bg-slate-100 hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed text-slate-600 text-sm font-medium"
+            >
+              ‹
+            </button>
+            <span className="text-xs text-slate-600 px-2">
+              {currentPage + 1} / {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
+              disabled={currentPage >= totalPages - 1}
+              className="w-8 h-8 flex items-center justify-center rounded bg-slate-100 hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed text-slate-600 text-sm font-medium"
+            >
+              ›
+            </button>
+          </div>
+        )}
+        
         {/* Zoom instructions */}
         <div className="absolute bottom-4 right-4 text-xs text-slate-500 bg-white/80 px-2 py-1 rounded border border-slate-200">
-          Scroll to zoom • Drag to pan
+          Scroll to zoom • Drag to pan{needsPagination && ' • Use arrows to navigate'}
         </div>
       </div>
     </div>

@@ -1,6 +1,9 @@
 "use client";
 
 import { Sidebar } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface Filter {
@@ -14,6 +17,7 @@ interface Filter {
 }
 
 export default function FiltersManagement() {
+  const router = useRouter();
   const [filters, setFilters] = useState<Filter[]>([
     {
       id: "1",
@@ -61,9 +65,23 @@ export default function FiltersManagement() {
         {/* Header */}
         <header className="bg-white border-b border-slate-200 px-6 py-4">
           <div className="max-w-7xl mx-auto">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">Filters Management</h1>
-              <p className="text-slate-600 mt-1">Manage and configure your active optimization filters</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => router.push('/optimization')}
+                  className="text-slate-600 hover:text-slate-900"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Optimization
+                </Button>
+                <div className="border-l border-slate-200 h-6"></div>
+                <div>
+                  <h1 className="text-2xl font-bold text-slate-900">Filters Management</h1>
+                  <p className="text-slate-600 mt-1">Manage and configure your active optimization filters</p>
+                </div>
+              </div>
             </div>
           </div>
         </header>

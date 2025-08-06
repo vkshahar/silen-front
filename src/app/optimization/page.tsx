@@ -6,8 +6,7 @@ import { QuickActionsDropdown } from "@/components/ui/dropdown-menu-demo";
 import { Target, TrendingUp, Database, BarChart3 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { SelectorChips } from "@/components/ui/selector-chips";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -21,7 +20,6 @@ interface OptimizationCard {
   reduction: string;
   eventCount: string;
   savings: string;
-  risk: string;
   sample: { line1: string; line2: string };
   buttonText: string;
   buttonDisabled?: boolean;
@@ -29,7 +27,6 @@ interface OptimizationCard {
 
 export default function OptimizationInitiatives() {
   const router = useRouter();
-  const [selectedRisks, setSelectedRisks] = useState<string[]>([]);
   const [appliedCards, setAppliedCards] = useState<Set<string>>(new Set());
 
   const optimizationCards: OptimizationCard[] = [
@@ -43,7 +40,6 @@ export default function OptimizationInitiatives() {
       reduction: "25% reduction",
       eventCount: "9.8k events",
       savings: "$2,250/month",
-      risk: "Low risk",
       sample: {
         line1: "Event ID: 1001 | Source: Microsoft-Windows-Winlogon",
         line2: "Debug: User logon session started | Process: winlogon.exe"
@@ -60,7 +56,6 @@ export default function OptimizationInitiatives() {
       reduction: "40% reduction",
       eventCount: "45.2k events",
       savings: "$1,230/month",
-      risk: "Low risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z src=firewall-01",
         line2: "message=\"Heartbeat status OK\" interval=60s"
@@ -77,7 +72,6 @@ export default function OptimizationInitiatives() {
       reduction: "35% reduction",
       eventCount: "67.8k events",
       savings: "$1,875/month",
-      risk: "Low risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z service=systemd",
         line2: "message=\"Service heartbeat\" status=active"
@@ -94,7 +88,6 @@ export default function OptimizationInitiatives() {
       reduction: "50% reduction",
       eventCount: "23.4k events",
       savings: "$1,020/month",
-      risk: "Low risk",
       sample: {
         line1: "Event ID: 4688 | Source: Microsoft-Windows-Security-Auditing",
         line2: "Process: chrome.exe | Command: --update-check"
@@ -111,7 +104,6 @@ export default function OptimizationInitiatives() {
       reduction: "30% reduction",
       eventCount: "38.9k events",
       savings: "$1,395/month",
-      risk: "Low risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z src=169.254.1.100",
         line2: "dst=169.254.1.101 protocol=UDP port=5353"
@@ -128,7 +120,6 @@ export default function OptimizationInitiatives() {
       reduction: "45% reduction",
       eventCount: "156.7k events",
       savings: "$705/month",
-      risk: "Low risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z src=192.168.1.100",
         line2: "dst=8.8.8.8 query=example.com type=A"
@@ -145,7 +136,6 @@ export default function OptimizationInitiatives() {
       reduction: "55% reduction",
       eventCount: "42.1k events",
       savings: "$1,680/month",
-      risk: "Low risk",
       sample: {
         line1: "Event ID: 1 | Source: Microsoft-Windows-Sysmon",
         line2: "Process: OUTLOOK.EXE | Parent: explorer.exe"
@@ -162,7 +152,6 @@ export default function OptimizationInitiatives() {
       reduction: "60% reduction",
       eventCount: "89.3k events",
       savings: "$2,790/month",
-      risk: "Low risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z user=john.doe",
         line2: "action=login status=success ip=192.168.1.100"
@@ -179,7 +168,6 @@ export default function OptimizationInitiatives() {
       reduction: "70% reduction",
       eventCount: "234.7k events",
       savings: "$3,360/month",
-      risk: "Low risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z src=192.168.1.100",
         line2: "dst=10.0.0.5 action=allow protocol=TCP port=443"
@@ -196,7 +184,6 @@ export default function OptimizationInitiatives() {
       reduction: "65% reduction",
       eventCount: "567.2k events",
       savings: "$4,770/month",
-      risk: "Medium risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z status=200",
         line2: "method=GET path=/api/health response_time=45ms"
@@ -213,7 +200,6 @@ export default function OptimizationInitiatives() {
       reduction: "50% reduction",
       eventCount: "78.9k events",
       savings: "$2,145/month",
-      risk: "Low risk",
       sample: {
         line1: "INFO 2025-01-07T12:00:00Z tenant=contoso",
         line2: "message=\"User session created\" level=info"
@@ -233,52 +219,9 @@ export default function OptimizationInitiatives() {
     });
   };
 
-  const filteredCards = useMemo(() => {
-    let cards = optimizationCards.filter(card => !appliedCards.has(card.id));
-    
-    if (selectedRisks.length === 0) {
-      return cards;
-    }
-    return cards.filter(card => selectedRisks.includes(card.risk));
-  }, [selectedRisks, appliedCards]);
+  const filteredCards = optimizationCards.filter(card => !appliedCards.has(card.id));
 
-  // Calculate counts for each risk level
-  const riskCounts = useMemo(() => {
-    const counts = {
-      "Low risk": 0,
-      "Medium risk": 0,
-      "High risk": 0
-    };
-    
-    optimizationCards.forEach(card => {
-      if (counts.hasOwnProperty(card.risk)) {
-        counts[card.risk as keyof typeof counts]++;
-      }
-    });
-    
-    return counts;
-  }, []);
 
-  // Create options with counts
-  const riskOptions = useMemo(() => {
-    return [
-      `Low risk (${riskCounts["Low risk"]})`,
-      `Medium risk (${riskCounts["Medium risk"]})`,
-      `High risk (${riskCounts["High risk"]})`
-    ];
-  }, [riskCounts]);
-
-  const getRiskTagColors = (risk: string) => {
-    const lowerRisk = risk.toLowerCase();
-    if (lowerRisk.includes('low')) {
-      return "bg-green-50 text-green-700 border-green-200";
-    } else if (lowerRisk.includes('medium')) {
-      return "bg-orange-50 text-orange-700 border-orange-200";
-    } else if (lowerRisk.includes('high')) {
-      return "bg-red-50 text-red-700 border-red-200";
-    }
-    return "bg-slate-50 text-slate-700 border-slate-200";
-  };
 
   return (
     <div className="flex min-h-screen bg-surface-secondary">
@@ -330,26 +273,20 @@ export default function OptimizationInitiatives() {
               />
             </div>
             
-            {/* Risk Filter Chips */}
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-900">Filter by Risk Level</h3>
-                  <p className="text-sm text-slate-600">Select risk levels to filter optimization strategies</p>
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => router.push('/filters')}
-                  className="text-sm border-surface-border bg-white text-slate-700 hover:bg-surface-secondary"
-                >
-                  Manage active filters
-                </Button>
+            {/* Manage Active Filters Section */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">Active Filters</h3>
+                <p className="text-sm text-slate-600">Manage your currently applied optimization filters</p>
               </div>
-              <SelectorChips 
-                options={riskOptions}
-                onChange={setSelectedRisks}
-              />
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => router.push('/filters')}
+                className="text-sm border-surface-border bg-white text-slate-700 hover:bg-surface-secondary"
+              >
+                Manage active filters
+              </Button>
             </div>
             
             {/* Optimization Cards - Dynamic 3 Column Layout */}
@@ -380,9 +317,6 @@ export default function OptimizationInitiatives() {
                     </span>
                     <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-xs font-medium rounded border border-green-200">
                       {card.savings}
-                    </span>
-                    <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded border ${getRiskTagColors(card.risk)}`}>
-                      {card.risk}
                     </span>
                   </div>
 
