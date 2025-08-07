@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { Database, Shield, Server, Cloud, Activity, Target, Shuffle } from 'lucide-react';
+import { Database, Shield, Server, Cloud, Activity, Target } from 'lucide-react';
+import Lottie from 'lottie-react';
+import aiBrainAnimation from '../../../AI Brain.json';
 
 interface FlowNode {
   id: string;
@@ -137,8 +139,8 @@ const MemoizedHubNode = React.memo(({
       style={{
         left: position.x,
         top: position.y,
-        width: 140,
-        height: 55,
+        width: 160,
+        height: 110,
         transform: `translate3d(0, 0, 0)` // Force hardware acceleration
       }}
       onMouseEnter={onMouseEnter}
@@ -146,7 +148,7 @@ const MemoizedHubNode = React.memo(({
     >
       <div className={`
         w-full h-full rounded-lg border-2 transition-all duration-300 cursor-pointer
-        flex flex-col items-center justify-center px-2 gap-1
+        flex flex-col items-center justify-center px-2
         ${isHovered 
           ? 'bg-gradient-to-br from-purple-50 to-purple-100 border-purple-300 shadow-xl shadow-purple-200' 
           : isConnected
@@ -154,28 +156,9 @@ const MemoizedHubNode = React.memo(({
           : 'bg-gradient-to-br from-slate-50 to-purple-25 border-purple-200 hover:border-purple-300'
         }
       `}>
-        <div className={`
-          w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300
-          ${isHovered 
-            ? 'bg-purple-200' 
-            : isConnected 
-            ? 'bg-purple-100'
-            : 'bg-purple-50'
-          }
-        `}>
-          <hubData.icon className={`
-            w-4 h-4 transition-all duration-300
-            ${isHovered 
-              ? 'text-purple-700' 
-              : isConnected
-              ? 'text-purple-600'
-              : 'text-purple-500'
-            }
-          `} />
-        </div>
         <div className="text-center">
           <div className={`
-            font-medium transition-all duration-300 leading-none text-[10px]
+            font-medium transition-all duration-300 leading-none text-[12px] tracking-wide
             ${isHovered 
               ? 'text-purple-900' 
               : isConnected
@@ -185,17 +168,20 @@ const MemoizedHubNode = React.memo(({
           `}>
             {hubData.label}
           </div>
-          <div className={`
-            transition-all duration-300 truncate leading-none mt-1 text-[8px]
-            ${isHovered 
-              ? 'text-purple-700' 
-              : isConnected
-              ? 'text-purple-600'
-              : 'text-purple-500'
-            }
-          `}>
-            {hubData.description}
-          </div>
+        </div>
+        <div className="w-20 h-20 flex items-center justify-center">
+          <Lottie 
+            animationData={aiBrainAnimation}
+            loop={true}
+            className="w-full h-full"
+            style={{
+              filter: isHovered 
+                ? 'hue-rotate(20deg) brightness(1.1)' 
+                : isConnected
+                ? 'hue-rotate(10deg) brightness(1.05)'
+                : 'brightness(1)'
+            }}
+          />
         </div>
       </div>
     </div>
@@ -323,9 +309,9 @@ export const SimpleFlowChart = () => {
 
   const hub: HubNode = useMemo(() => ({
     id: 'hub',
-    label: 'Data Processing Hub',
-    description: 'All sources route through here',
-    icon: Shuffle,
+    label: 'Silen',
+    description: '',
+    icon: () => null,
     type: 'hub'
   }), []);
 
@@ -373,7 +359,7 @@ export const SimpleFlowChart = () => {
       
       return { x: containerWidth - 180, y: startY + (index * nodeSpacing) };
     } else if (type === 'hub') {
-      return { x: containerWidth / 2 - 70, y: containerHeight / 2 - 27 };
+      return { x: containerWidth / 2 - 80, y: containerHeight / 2 - 55 };
     }
     
     return { x: 0, y: 0 };
@@ -402,7 +388,7 @@ export const SimpleFlowChart = () => {
       const startX = sourcePos.x + 140;
       const startY = sourcePos.y + 20;
       const endX = hubPos.x;
-      const endY = hubPos.y + 27;
+      const endY = hubPos.y + 55;
       
       const controlPointOffset = Math.min(100, Math.abs(endX - startX) * 0.5);
       const midX1 = startX + controlPointOffset;
@@ -419,7 +405,7 @@ export const SimpleFlowChart = () => {
       const startX = expandNode.position.x + 140;
       const startY = expandNode.position.y + 20;
       const endX = hubPos.x;
-      const endY = hubPos.y + 27;
+      const endY = hubPos.y + 55;
       
       const controlPointOffset = Math.min(100, Math.abs(endX - startX) * 0.5);
       const midX1 = startX + controlPointOffset;
@@ -437,8 +423,8 @@ export const SimpleFlowChart = () => {
       const hubPos = getNodePosition('hub', 'hub');
       const destPos = getNodePosition(dest.id, 'destination');
       
-      const startX = hubPos.x + 140;
-      const startY = hubPos.y + 27;
+      const startX = hubPos.x + 160;
+      const startY = hubPos.y + 55;
       const endX = destPos.x;
       const endY = destPos.y + 20;
       
