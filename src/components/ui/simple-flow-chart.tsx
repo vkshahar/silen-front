@@ -45,8 +45,8 @@ const MemoizedNode = React.memo(({
       style={{
         left: position.x,
         top: position.y,
-        width: 200,
-        height: 60,
+        width: 140,
+        height: 40,
         transform: `translate3d(0, 0, 0)` // Force hardware acceleration
       }}
       onMouseEnter={onMouseEnter}
@@ -54,7 +54,7 @@ const MemoizedNode = React.memo(({
     >
       <div className={`
         w-full h-full rounded-lg border transition-all duration-300 cursor-pointer
-        flex items-center px-3 gap-2
+        flex items-center px-2 gap-2
         ${isHovered 
           ? 'bg-purple-50 border-purple-200 shadow-lg shadow-purple-100' 
           : isConnected
@@ -63,7 +63,7 @@ const MemoizedNode = React.memo(({
         }
       `}>
         <div className={`
-          w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300
+          w-6 h-6 rounded-lg flex items-center justify-center transition-all duration-300
           ${isHovered 
             ? 'bg-purple-100' 
             : isConnected
@@ -72,7 +72,7 @@ const MemoizedNode = React.memo(({
           }
         `}>
           <node.icon className={`
-            w-4 h-4 transition-all duration-300
+            w-3 h-3 transition-all duration-300
             ${isHovered 
               ? 'text-purple-600' 
               : isConnected
@@ -83,7 +83,7 @@ const MemoizedNode = React.memo(({
         </div>
         <div className="flex-1 min-w-0">
           <div className={`
-            text-xs font-medium transition-all duration-300 leading-tight
+            font-medium transition-all duration-300 leading-none text-[10px]
             ${isHovered 
               ? 'text-purple-900' 
               : isConnected
@@ -94,7 +94,7 @@ const MemoizedNode = React.memo(({
             {node.label}
           </div>
           <div className={`
-            text-xs transition-all duration-300 truncate
+            transition-all duration-300 truncate leading-none mt-1 text-[9px]
             ${isHovered 
               ? 'text-purple-600' 
               : isConnected
@@ -137,8 +137,8 @@ const MemoizedHubNode = React.memo(({
       style={{
         left: position.x,
         top: position.y,
-        width: 200,
-        height: 80,
+        width: 140,
+        height: 55,
         transform: `translate3d(0, 0, 0)` // Force hardware acceleration
       }}
       onMouseEnter={onMouseEnter}
@@ -146,7 +146,7 @@ const MemoizedHubNode = React.memo(({
     >
       <div className={`
         w-full h-full rounded-lg border-2 transition-all duration-300 cursor-pointer
-        flex flex-col items-center justify-center px-3 gap-1
+        flex flex-col items-center justify-center px-2 gap-1
         ${isHovered 
           ? 'bg-gradient-to-br from-purple-50 to-purple-100 border-purple-300 shadow-xl shadow-purple-200' 
           : isConnected
@@ -155,7 +155,7 @@ const MemoizedHubNode = React.memo(({
         }
       `}>
         <div className={`
-          w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+          w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300
           ${isHovered 
             ? 'bg-purple-200' 
             : isConnected 
@@ -164,7 +164,7 @@ const MemoizedHubNode = React.memo(({
           }
         `}>
           <hubData.icon className={`
-            w-5 h-5 transition-all duration-300
+            w-4 h-4 transition-all duration-300
             ${isHovered 
               ? 'text-purple-700' 
               : isConnected
@@ -175,7 +175,7 @@ const MemoizedHubNode = React.memo(({
         </div>
         <div className="text-center">
           <div className={`
-            text-xs font-semibold transition-all duration-300 leading-tight
+            font-medium transition-all duration-300 leading-none text-[10px]
             ${isHovered 
               ? 'text-purple-900' 
               : isConnected
@@ -186,7 +186,7 @@ const MemoizedHubNode = React.memo(({
             {hubData.label}
           </div>
           <div className={`
-            text-xs transition-all duration-300 truncate
+            transition-all duration-300 truncate leading-none mt-1 text-[8px]
             ${isHovered 
               ? 'text-purple-700' 
               : isConnected
@@ -235,7 +235,6 @@ MemoizedConnection.displayName = 'MemoizedConnection';
 
 export const SimpleFlowChart = () => {
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
-  const [showExpandedList, setShowExpandedList] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
@@ -314,16 +313,6 @@ export const SimpleFlowChart = () => {
       .slice(0, INITIAL_SOURCES_LIMIT);
   }, [allSources]);
   
-  // Remaining sources for the hover list
-  const remainingSources = useMemo(() => {
-    return allSources
-      .map(source => ({
-        ...source,
-        volumeNumber: parseFloat(source.volume.replace(' GB/day', ''))
-      }))
-      .sort((a, b) => b.volumeNumber - a.volumeNumber)
-      .slice(INITIAL_SOURCES_LIMIT);
-  }, [allSources]);
 
   const destinations: FlowNode[] = useMemo(() => [
     { id: 'splunk', label: 'Splunk', volume: 'Active', icon: Activity, type: 'destination' },
@@ -343,14 +332,14 @@ export const SimpleFlowChart = () => {
   // Always show only top 10 sources
   const visibleSources = topSources;
   
-  const hiddenSourcesCount = remainingSources.length;
+  const hiddenSourcesCount = allSources.length - INITIAL_SOURCES_LIMIT;
 
   // Memoized position calculator with stable reference
   const getNodePosition = useCallback((nodeId: string, type: 'source' | 'destination' | 'hub', isExpandNode = false) => {
-    const containerWidth = 1200;
-    const containerHeight = 650;
+    const containerWidth = 1000;
+    const containerHeight = 600;
     const SOURCES_PER_COLUMN = 10;
-    const INITIAL_COLUMN_X = 200;
+    const INITIAL_COLUMN_X = 120;
     
     if (type === 'source') {
       let index = visibleSources.findIndex(n => n.id === nodeId);
@@ -364,9 +353,9 @@ export const SimpleFlowChart = () => {
       }
       
       const totalNodes = visibleSources.length + (hiddenSourcesCount > 0 ? 1 : 0);
-      const availableHeight = containerHeight - 160;
-      const minNodeSpacing = 75;
-      const maxNodeSpacing = 90;
+      const availableHeight = containerHeight - 100;
+      const minNodeSpacing = 45;
+      const maxNodeSpacing = 50;
       
       let nodeSpacing = availableHeight / totalNodes;
       nodeSpacing = Math.max(minNodeSpacing, Math.min(maxNodeSpacing, nodeSpacing));
@@ -377,29 +366,43 @@ export const SimpleFlowChart = () => {
       return { x: INITIAL_COLUMN_X, y: startY + (index * nodeSpacing) };
     } else if (type === 'destination') {
       const index = destinations.findIndex(n => n.id === nodeId);
-      const availableHeight = containerHeight - 200;
-      const nodeSpacing = Math.max(110, Math.min(150, availableHeight / destinations.length));
+      const availableHeight = containerHeight - 100;
+      const nodeSpacing = Math.max(75, Math.min(85, availableHeight / destinations.length));
       const totalUsedHeight = destinations.length * nodeSpacing;
       const startY = Math.max(30, (containerHeight - totalUsedHeight) / 2);
       
-      return { x: containerWidth - 260, y: startY + (index * nodeSpacing) };
+      return { x: containerWidth - 180, y: startY + (index * nodeSpacing) };
     } else if (type === 'hub') {
-      return { x: containerWidth / 2 - 100, y: containerHeight / 2 - 40 };
+      return { x: containerWidth / 2 - 70, y: containerHeight / 2 - 27 };
     }
     
     return { x: 0, y: 0 };
   }, [visibleSources, hiddenSourcesCount, destinations]);
 
+  // Memoized expand node with stable position - aligned with data sources
+  const expandNode = useMemo(() => {
+    if (hiddenSourcesCount <= 0) return null;
+    
+    const lastVisibleIndex = visibleSources.length - 1;
+    if (lastVisibleIndex < 0) return null;
+    
+    const lastVisiblePos = getNodePosition(visibleSources[lastVisibleIndex].id, 'source');
+    // Align X position with data sources (same as INITIAL_COLUMN_X)
+    const position = { x: 120, y: lastVisiblePos.y + 50 };
+    
+    return { position };
+  }, [hiddenSourcesCount, visibleSources, getNodePosition]);
+
   // Memoized connection paths for better performance
   const sourceToHubPaths = useMemo(() => {
-    return visibleSources.map(source => {
+    const paths = visibleSources.map(source => {
       const sourcePos = getNodePosition(source.id, 'source');
       const hubPos = getNodePosition('hub', 'hub');
       
-      const startX = sourcePos.x + 200;
-      const startY = sourcePos.y + 30;
+      const startX = sourcePos.x + 140;
+      const startY = sourcePos.y + 20;
       const endX = hubPos.x;
-      const endY = hubPos.y + 40;
+      const endY = hubPos.y + 27;
       
       const controlPointOffset = Math.min(100, Math.abs(endX - startX) * 0.5);
       const midX1 = startX + controlPointOffset;
@@ -408,17 +411,36 @@ export const SimpleFlowChart = () => {
       
       return { id: source.id, path, testId: `source-to-hub-${source.id}` };
     });
-  }, [visibleSources, getNodePosition]);
+    
+    // Add connection from +X others node to hub if it exists
+    if (expandNode && hiddenSourcesCount > 0) {
+      const hubPos = getNodePosition('hub', 'hub');
+      
+      const startX = expandNode.position.x + 140;
+      const startY = expandNode.position.y + 20;
+      const endX = hubPos.x;
+      const endY = hubPos.y + 27;
+      
+      const controlPointOffset = Math.min(100, Math.abs(endX - startX) * 0.5);
+      const midX1 = startX + controlPointOffset;
+      const midX2 = endX - controlPointOffset;
+      const path = `M ${startX} ${startY} C ${midX1} ${startY} ${midX2} ${endY} ${endX} ${endY}`;
+      
+      paths.push({ id: 'expand', path, testId: 'expand-to-hub' });
+    }
+    
+    return paths;
+  }, [visibleSources, getNodePosition, expandNode, hiddenSourcesCount]);
 
   const hubToDestPaths = useMemo(() => {
     return destinations.map(dest => {
       const hubPos = getNodePosition('hub', 'hub');
       const destPos = getNodePosition(dest.id, 'destination');
       
-      const startX = hubPos.x + 200;
-      const startY = hubPos.y + 40;
+      const startX = hubPos.x + 140;
+      const startY = hubPos.y + 27;
       const endX = destPos.x;
-      const endY = destPos.y + 30;
+      const endY = destPos.y + 20;
       
       const controlPointOffset = Math.min(80, Math.abs(endX - startX) * 0.4);
       const midX1 = startX + controlPointOffset;
@@ -515,27 +537,6 @@ export const SimpleFlowChart = () => {
     setPanOffset({ x: 0, y: 0 });
   }, []);
 
-  const handleExpandHover = useCallback(() => {
-    setShowExpandedList(true);
-  }, []);
-  
-  const handleExpandLeave = useCallback(() => {
-    setShowExpandedList(false);
-  }, []);
-
-  // Memoized expand node with stable position
-  const expandNode = useMemo(() => {
-    if (hiddenSourcesCount <= 0) return null;
-    
-    const lastVisibleIndex = visibleSources.length - 1;
-    if (lastVisibleIndex < 0) return null;
-    
-    const lastVisiblePos = getNodePosition(visibleSources[lastVisibleIndex].id, 'source');
-    const position = { x: 280, y: lastVisiblePos.y + 75 };
-    
-    return { position };
-  }, [hiddenSourcesCount, visibleSources, getNodePosition]);
-
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="mb-6 flex items-center justify-between">
@@ -558,7 +559,7 @@ export const SimpleFlowChart = () => {
       
       <div 
         ref={containerRef}
-        className="relative h-[650px] bg-gradient-to-br from-slate-50 to-purple-50/30 rounded-lg border border-slate-100 overflow-hidden flex items-center justify-center select-none"
+        className="relative h-[600px] bg-gradient-to-br from-slate-50 to-purple-50/30 rounded-lg border border-slate-100 overflow-hidden flex items-center justify-center select-none"
         onMouseEnter={handleContainerEnter}
         onMouseLeave={handleContainerLeave}
         onMouseDown={handleMouseDown}
@@ -579,7 +580,7 @@ export const SimpleFlowChart = () => {
         
         {/* Centered container with optimized transforms */}
         <div 
-          className="relative w-[1200px] h-full"
+          className="relative w-[1000px] h-full"
           data-testid="flow-chart-container"
           style={{
             transform: `scale(${zoomLevel}) translate3d(${panOffset.x / zoomLevel}px, ${panOffset.y / zoomLevel}px, 0)`,
@@ -598,7 +599,7 @@ export const SimpleFlowChart = () => {
               <MemoizedConnection
                 key={testId}
                 path={path}
-                isHighlighted={hoveredNode === id || hoveredNode === 'hub'}
+                isHighlighted={hoveredNode === id || hoveredNode === 'hub' || (id === 'expand' && hoveredNode === 'expand')}
                 testId={testId}
               />
             ))}
@@ -647,7 +648,7 @@ export const SimpleFlowChart = () => {
               hubData={hub}
             />
             
-            {/* Expand node with hover list */}
+            {/* Expand node - simple display without hover functionality */}
             {expandNode && (
               <div
                 key="expand-node"
@@ -656,50 +657,12 @@ export const SimpleFlowChart = () => {
                   left: expandNode.position.x,
                   top: expandNode.position.y
                 }}
-                onMouseEnter={handleExpandHover}
-                onMouseLeave={handleExpandLeave}
               >
-                <div className={`
-                  w-[200px] h-[60px] rounded-lg border-2 transition-all duration-300 
-                  flex items-center justify-center cursor-help
-                  ${showExpandedList
-                    ? 'bg-purple-50 border-purple-300 shadow-lg shadow-purple-100' 
-                    : 'bg-purple-25 border-purple-200 border-dashed hover:border-purple-300'
-                  }
-                `}>
-                  <div className={`
-                    text-xs font-medium transition-all duration-300 text-center
-                    ${showExpandedList ? 'text-purple-700' : 'text-purple-600'}
-                  `}>
+                <div className="w-[140px] h-[40px] rounded-lg border-2 border-purple-200 border-dashed bg-purple-25 flex items-center justify-center">
+                  <div className="font-medium text-purple-600 text-center text-[10px]">
                     <div>+{hiddenSourcesCount} others</div>
-                    <div className="text-xs opacity-75">Hover to see list</div>
                   </div>
                 </div>
-                
-                {/* Hover list */}
-                {showExpandedList && (
-                  <div 
-                    className="absolute top-0 left-full ml-4 bg-white border border-slate-200 rounded-lg shadow-lg p-3 w-80 max-h-96 overflow-y-auto z-30"
-                    onMouseEnter={handleExpandHover}
-                    onMouseLeave={handleExpandLeave}
-                    onWheel={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    <div className="text-xs font-semibold text-slate-700 mb-2">Additional Sources:</div>
-                    <div className="space-y-1">
-                      {remainingSources.map((source, index) => (
-                        <div key={source.id} className="flex items-center gap-2 py-1 px-2 rounded hover:bg-slate-50">
-                          <source.icon className="w-3 h-3 text-slate-500" />
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs font-medium text-slate-700 truncate">{source.label}</div>
-                            <div className="text-xs text-slate-500">{source.volume}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             )}
             
